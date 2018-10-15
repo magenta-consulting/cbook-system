@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<serializer>
+    <class name="Magenta\Bundle\CBookModelBundle\Entity\Media\Base\AppMedia" exclusion-policy="all"
+           xml-root-name="media">
+
+        <property name="id" type="integer" expose="true" since-version="1.0" groups="sonata_api_read"/>
+
+        <property name="organisation" serialized-name="id_organisation"
+                  type="magenta_organisation_organisation_id" expose="true" since-version="1.0"
+                  groups="sonata_api_read,sonata_api_write"/>
+
+        <property name="creativeWork" serialized-name="id_creative_work"
+                  type="bean_component_creativework_creativework_id" expose="true" since-version="1.0"
+                  groups="sonata_api_read,sonata_api_write"/>
+
+        <property name="name" type="string" expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write"/>
+
+        <property name="context" type="string" expose="true" since-version="1.0" groups="sonata_api_read,sonata_api_write,sonata_search"/>
+
+        <property name="description" type="string" expose="true" since-version="1.0" groups="sonata_api_read"/>
+
+        <property name="contentUrl" type="string" expose="true" since-version="1.0" groups="sonata_api_read"/>
+
+        <virtual-property name="host" method="getHost" type="string" expose="true" since-version="1.0" groups="sonata_api_read"/>
+
+        <virtual-property method="getLink" type="string" expose="true" since-version="1.0" groups="sonata_api_read"/>
+
+    </class>
+</serializer>

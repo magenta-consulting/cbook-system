@@ -1,0 +1,104 @@
+services:
+    _defaults:
+        autowire: false      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+        # fetching services directly from the container via $container->get() won't work.
+        # The best practice is to be explicit about your dependencies anyway.
+
+    Magenta\Bundle\CBookModelBundle\Repository\:
+        resource: '../../Repository'
+        autowire: true
+        tags: ['doctrine.repository_service']
+
+    magenta_user.user_provider.username:
+        class: Magenta\Bundle\CBookModelBundle\Security\UserProvider
+        public: false
+    magenta_user.user_provider.username_email:
+        class: Magenta\Bundle\CBookModelBundle\Security\EmailUserProvider
+        arguments: ['@magenta_user.user_manager']
+
+    magenta_user.user_provider.org_code_nric:
+        class: Magenta\Bundle\CBookModelBundle\Security\OrgCodeNricUserProvider
+        arguments: ['@magenta_user.user_manager']
+
+    magenta_book.command.fix_chapter_position:
+        class: Magenta\Bundle\CBookModelBundle\Command\Book\FixChapterPositionCommand
+        public: false
+        arguments: ['@doctrine.orm.entity_manager','@doctrine']
+        tags:
+        - {name: "console.command", command: "magenta:book:fix-chapter-position"}
+
+    magenta_user.command.create_user:
+        class: Magenta\Bundle\CBookModelBundle\Command\User\CreateUserCommand
+        public: false
+        arguments: ['@magenta_user.util.user_manipulator']
+        tags:
+            - {name: "console.command", command: "magenta:user:create"}
+
+    magenta_user.command.promote_user:
+        class: Magenta\Bundle\CBookModelBundle\Command\User\PromoteUserCommand
+        arguments: ['@magenta_user.util.user_manipulator']
+        tags:
+            - {name: "console.command", command: "magenta:user:promote"}
+
+    magenta_user.util.user_manipulator:
+        class: Magenta\Bundle\CBookModelBundle\Service\User\UserManipulator
+        public: true
+        arguments: ['@magenta_user.user_manager','@event_dispatcher','@request_stack']
+
+    magenta_user.user_manager:
+        class: Magenta\Bundle\CBookModelBundle\Service\User\UserManager
+        public: true
+        arguments: ['@magenta_user.util.password_updater','@magenta_user.util.canonical_fields_updater','@magenta_user.object_manager','Magenta\Bundle\CBookModelBundle\Entity\User\User']
+
+    magenta_user.object_manager:
+        class: Doctrine\Common\Persistence\ObjectManager
+        arguments: [null]
+
+    magenta_user.util.password_updater:
+        class: Magenta\Bundle\CBookModelBundle\Util\User\PasswordUpdater
+        public: true # false in FOSUser
+        arguments: ['@security.encoder_factory']
+
+    magenta_user.util.canonical_fields_updater:
+        class: Magenta\Bundle\CBookModelBundle\Util\User\CanonicalFieldsUpdater
+        public: false
+        arguments: ['@magenta_user.util.canonicalizer','@magenta_user.util.canonicalizer']
+
+    magenta_user.util.canonicalizer:
+        class: Magenta\Bundle\CBookModelBundle\Util\User\Canonicalizer
+        public: false
+
+# fos_user.user_listener - FOS\UserBundle\Doctrine\UserListener
+    magenta_user.user_event_subscriber:
+        class: Magenta\Bundle\CBookModelBundle\Doctrine\User\UserEventSubsriber
+        arguments:
+          - '@magenta_user.util.password_updater'
+          - '@magenta_user.util.canonical_fields_updater'
+          - '@service_container'
+        tags: ['doctrine.event_subscriber']
+
+    Magenta\Bundle\CBookModelBundle\Util\CanonicalFieldsUpdater:
+        alias: 'magenta_user.util.canonical_fields_updater'
+        public: false
+    Magenta\Bundle\CBookModelBundle\Util\User\PasswordUpdaterInterface:
+        alias: 'magenta_user.util.password_updater'
+        public: false
+    Magenta\Bundle\CBookModelBundle\Service\User\UserManagerInterface:
+        alias: 'magenta_user.user_manager'
+        public: false
+
+#    magenta.repo.user_user:
+#        autowire: true
+#        class: Magenta\Bundle\CBookModelBundle\Repository\User\UserRepository
+#        arguments:
+#            - '@doctrine'
+#        tags: ['doctrine.repository_service']
+#
+#    Magenta\Bundle\CBookModelBundle\Repository\User\UserRepository: '@magenta.repo.user_user'
+    Magenta\Bundle\CBookModelBundle\Service\User\UserService:
+        class: Magenta\Bundle\CBookModelBundle\Service\User\UserService
+        arguments:
+        - '@service_container'
+        public: true

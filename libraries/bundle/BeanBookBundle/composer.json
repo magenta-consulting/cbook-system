@@ -1,0 +1,41 @@
+{
+  "name": "beancomponent/book-bundle",
+  "type": "symfony-bundle",
+  "description": "Provides a Bundle Integration for the Book Component.",
+  "keywords": [
+    "Symfony Book Bundle"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Peter Bean",
+      "email": "peterbean@beancomponent.com"
+    }
+  ],
+  "require": {
+    "php": "^5.6|^7.0",
+    "beancomponent/creative-work-bundle": "^0.1",
+    "beancomponent/book": "^0.1"
+
+  },
+  "require-dev": {
+
+  },
+  "suggest": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Bean\\Bundle\\BookBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Bean\\Bundle\\BookBundle\\spec\\": "tests/spec/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.1-dev"
+    }
+  }
+}

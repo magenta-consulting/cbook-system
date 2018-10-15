@@ -1,0 +1,265 @@
+parameters:
+    s3_version: latest
+    s3_bucket_name: magenta-consulting
+    s3_access_key: '%env(resolve:AWS_S3_ACCESS_KEY)%'
+    s3_secret_key: '%env(resolve:AWS_S3_SECRET_KEY)%'
+    s3_region: ap-southeast-1
+    s3_directory: '%env(resolve:AWS_S3_DIR)%'
+
+    MEDIA_API_BASE_URL: '%env(resolve:MEDIA_API_BASE_URL)%'
+    MEDIA_API_PREFIX: '%env(MEDIA_API_PREFIX)%'
+    PDF_API_BASE_URL:  '%env(resolve:PDF_API_BASE_URL)%'
+    PDF_DOWNLOAD_PREFIX: '%env(resolve:PDF_DOWNLOAD_PREFIX)%'
+
+    sonata.classification.manager.category.class: Magenta\Bundle\CBookModelBundle\Service\Classification\CategoryManager
+    #    sonata.media.provider.youtube.class: Application\Sonata\MediaBundle\Provider\AppYouTubeProvider
+    #    sonata.media.provider.image.class: Application\Sonata\MediaBundle\Provider\AppImageProvider
+    #    sonata.media.provider.file.class: Application\Sonata\MediaBundle\Provider\AppFileProvider
+    sonata.media.manager.media.class: Magenta\Bundle\CBookModelBundle\Service\Media\MediaService
+    sonata.media.thumbnail.format: Bean\Bundle\SonataMediaBundle\Override\Thumbnail\FormatThumbnail
+
+# BookBundle
+bean_thing:
+    persistence:
+        orm:
+            enabled:              true
+            manager_name:         null
+            inheritance_strategy: custom
+
+bean_organization:
+    class:
+        organization: Magenta\Bundle\CBookModelBundle\Entity\Organization\Organization
+        individual_member: Magenta\Bundle\CBookModelBundle\Entity\Organization\IndividualMember
+bean_person:
+    class:
+        person: Magenta\Bundle\CBookModelBundle\Entity\Person\Person
+bean_book:
+    class:
+        book: Magenta\Bundle\CBookModelBundle\Entity\Book\Book
+        book_page: Magenta\Bundle\CBookModelBundle\Entity\Book\BookPage
+#        book: Bean\Bundle\BookBundle\Doctrine\Orm\Book
+
+bean_creative_work:
+    persistence:
+        orm:
+            enabled:              true
+            manager_name:         null
+            inheritance_strategy: class
+
+doctrine:
+    dbal:
+        types:
+            magenta_json: Magenta\Bundle\CBookModelBundle\Doctrine\Types\JsonType
+            json: Sonata\Doctrine\Types\JsonType
+
+    orm:
+        entity_managers:
+            default:
+                mappings:
+                    SonataMediaBundle: ~
+
+                entity_listeners:
+                    entities:
+                    #                    Will not work for Mere Interfaces
+                    -
+                        class:  "Magenta\\Bundle\\CBookModelBundle\\Entity\\Organisation\\IndividualMember"
+                        listener:
+                        -
+                            class: "Magenta\\Bundle\\CBookModelBundle\\Doctrine\\Organisation\\IndividualMemberListener"
+                            event:
+                                -
+                                    type: postLoad
+                                    method: postLoadHandler
+
+                                -
+                                    type: postPersist
+                                    method: postPersistHandler
+                                -
+                                    type: postUpdate
+                                    method: postUpdateHandler
+                                -
+                                    type: prePersist
+                                    method: prePersistHandler
+                                -
+                                    type: preUpdate
+                                    method: preUpdateHandler
+                                -
+                                    type: preRemove
+                                    method: preRemoveHandler
+                                -
+                                    type: postRemove
+                                    method: postRemoveHandler
+
+                    -
+                        class:  "Magenta\\Bundle\\CBookModelBundle\\Entity\\Person\\Person"
+                        listener:
+                        -
+                            class: "Magenta\\Bundle\\CBookModelBundle\\Doctrine\\Person\\PersonListener"
+                            event:
+                            -
+                                type: postLoad
+                                method: postLoadHandler
+
+                            -
+                                type: postPersist
+                                method: postPersistHandler
+                            -
+                                type: postUpdate
+                                method: postUpdateHandler
+                            -
+                                type: prePersist
+                                method: prePersistHandler
+                            -
+                                type: preUpdate
+                                method: preUpdateHandler
+                            -
+                                type: preRemove
+                                method: preRemoveHandler
+                            -
+                                type: postRemove
+                                method: postRemoveHandler
+
+
+                    -
+                        class:  "Magenta\\Bundle\\CBookModelBundle\\Entity\\Book\\Book"
+                        listener:
+                        -
+                            class: "Magenta\\Bundle\\CBookModelBundle\\Doctrine\\Book\\BookListener"
+                            event:
+                            -
+                                type: postLoad
+                                method: postLoadHandler
+
+                            -
+                                type: postPersist
+                                method: postPersistHandler
+                            -
+                                type: postUpdate
+                                method: postUpdateHandler
+                            -
+                                type: prePersist
+                                method: prePersistHandler
+                            -
+                                type: preUpdate
+                                method: preUpdateHandler
+                            -
+                                type: preRemove
+                                method: preRemoveHandler
+                            -
+                                type: postRemove
+                                method: postRemoveHandler
+security:
+    encoders:
+        Magenta\Bundle\CBookModelBundle\Entity\User\UserInterface: bcrypt
+
+    role_hierarchy:
+        ROLE_POWER_USER: [ROLE_USER,ROLE_SONATA_ADMIN]
+        ROLE_ADMIN:       [ROLE_POWER_USER]
+        ROLE_ALLOWED_TO_SWITCH: ~
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    # set access_strategy to unanimous, else you may have unexpected behaviors
+    access_decision_manager:
+        strategy: unanimous
+
+    providers:
+        # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+        magenta_user:
+            id: magenta_user.user_provider.username_email
+        magenta_username:
+            id: magenta_user.user_provider.username
+        magenta_user_org_code_nric:
+            id: magenta_user.user_provider.org_code_nric
+
+knp_doctrine_behaviors:
+    blameable:      false
+    geocodable:     ~     # Here null is converted to false
+    loggable:       ~
+    translatable:   true
+    sluggable:      false
+    soft_deletable: false
+
+sonata_classification:
+    class:
+        category: Magenta\Bundle\CBookModelBundle\Entity\Classification\Category
+        collection: Magenta\Bundle\CBookModelBundle\Entity\Classification\Collection
+        context: Magenta\Bundle\CBookModelBundle\Entity\Classification\Context
+        tag: Magenta\Bundle\CBookModelBundle\Entity\Classification\Tag
+        media: Magenta\Bundle\CBookModelBundle\Entity\Media\Media
+
+sonata_media:
+    default_context: default
+    contexts:
+        content_image:
+            providers:
+                - sonata.media.provider.image
+            formats:
+                small: { width: 100 , quality: 70}
+                big:   { width: 500 , quality: 70}
+            download:
+                strategy: sonata.media.security.public_strategy
+                mode: http
+
+        content_file:
+            providers:
+                - sonata.media.provider.file
+            download:
+                strategy: sonata.media.security.public_strategy
+                mode: http
+
+        default:
+            providers:
+                - sonata.media.provider.dailymotion
+                - sonata.media.provider.youtube
+                - sonata.media.provider.image
+                - sonata.media.provider.file
+                - sonata.media.provider.vimeo
+            formats:
+                small: { width: 100 , quality: 70}
+                big:   { width: 500 , quality: 70}
+            download:
+                strategy: sonata.media.security.connected_strategy
+                mode: http
+    cdn:
+        server:
+            path: 'https://s3-%s3_region%.amazonaws.com/%s3_bucket_name%/%s3_directory%'
+            #https://s3-ap-southeast-1.amazonaws.com/magenta-consulting/local/default/0001/01/c5971b853c7c1407ebdb7dd7f0a31bf845aee71e.jpeg
+#            path: /upload/media
+    providers:
+        image:
+            filesystem: sonata.media.filesystem.s3
+
+    filesystem:
+        local:
+            # Directory for uploads should be writable
+            directory: "%kernel.project_dir%/public/upload/media"
+            create: false
+        s3:
+            bucket:      '%s3_bucket_name%'
+            accessKey:   '%s3_access_key%'
+            secretKey:   '%s3_secret_key%'
+            region:      '%s3_region%'
+            version:     '%s3_version%' # latest by default (cf. https://docs.aws.amazon.com/aws-sdk-php/v3/guide/guide/configuration.html#version)
+            sdk_version: 3
+#            sdk_version: '%s3_sdk_version%' # 2 by default
+
+            directory:   "%s3_directory%"
+
+            create:         false
+            #region:         s3.amazonaws.com # change if not using US Standard region
+            storage:        standard # can be one of: standard or reduced
+            acl:            private # this no longer works, private by default can be one of: public, private, open, auth_read, owner_read, owner_full_control
+#            encryption:     aes256 # can be aes256 or not set
+            cache_control:  max-age=86400 # or any other
+#            meta:
+ #               key1:       value1 #any amount of metas(sent as x-amz-meta-key1 = value1)
+    # if you don't use default namespace configuration
+    class:
+        media: Magenta\Bundle\CBookModelBundle\Entity\Media\Media
+        gallery: Magenta\Bundle\CBookModelBundle\Entity\Media\Gallery
+        gallery_has_media: Magenta\Bundle\CBookModelBundle\Entity\Media\GalleryHasMedia
+        category: Magenta\Bundle\CBookModelBundle\Entity\Classification\Category
+
+    category_manager: sonata.classification.manager.category
+
+    db_driver: doctrine_orm # could be doctrine_orm, doctrine_mongodb or doctrine_phpcr

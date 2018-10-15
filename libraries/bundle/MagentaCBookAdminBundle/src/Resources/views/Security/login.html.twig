@@ -1,0 +1,96 @@
+{% extends "@MagentaCBookAdmin/user_layout.html.twig" %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .login-box-msg {
+            color: #8E2D7C;
+            /*#605ca8;*/
+        }
+
+        body, .btn-primary {
+            background-color: #8E2D7C;
+            /*#605ca8;*/
+        }
+
+        .btn-primary.focus, .btn-primary:focus {
+            background-color: #3e3b6c;
+        }
+
+        .checkbox label, .radio label {
+            margin-left: 0px;
+        }
+
+        .main-header {
+            background-color: #d2d6de;
+        }
+    </style>
+{% endblock %}
+                {% block logo %}
+                    {% spaceless %}
+                        <div class="text-center">
+                            <div class="" style="margin:auto; height:50px;" href="{{ path('sonata_admin_dashboard') }}">
+                                <img height="50" src="https://www.magenta-consulting.com/images/logo.png"
+                                     alt="{{ sonata_admin.adminPool.title }}">
+                            </div>
+                        </div>
+                    {% endspaceless %}
+                {% endblock %}
+
+{% block sonata_wrapper %}
+    <div class="login-box box-shadow">
+        <div class="login-logo">
+            <a href="{{ path('sonata_admin_dashboard') }}">
+                {% if admin_pool is defined %}
+                    {% if 'single_text' == admin_pool.getOption('title_mode') or 'both' == admin_pool.getOption('title_mode') %}
+                        <span>{{ admin_pool.title }}</span>
+                    {% endif %}
+                {% endif %}
+            </a>
+        </div>
+        <div class="login-box-body">
+            {% block sonata_user_login_form %}
+                {% block sonata_user_login_error %}
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.message|trans({}, 'MagentaCBookAdminBundle') }}</div>
+                    {% endif %}
+                {% endblock %}
+                <h3 class="login-box-msg">{{ 'security.login.title_user_authentication'|trans({}, 'MagentaCBookAdminBundle') }}</h3>
+                <form action="{{ path("magenta_user_security_check") }}" method="post" role="form">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+
+                    <div class="form-group has-feedback">
+                        <input type="text" class="form-control" id="username" name="_username"
+                               value="{{ last_username }}" required="required"
+                               placeholder="{{ 'security.login.username'|trans({}, 'MagentaCBookAdminBundle') }}"/>
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+
+                    <div class="form-group has-feedback">
+                        <input type="password" class="form-control" id="password" name="_password" required="required"
+                               placeholder="{{ 'security.login.password'|trans({}, 'MagentaCBookAdminBundle') }}"/>
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <div class="checkbox icheck">
+                                <label>
+                                    <input type="checkbox" id="remember_me" name="_remember_me" value="on"/>
+                                    {{ 'security.login.remember_me'|trans({}, 'MagentaCBookAdminBundle') }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <button type="submit"
+                                    class="btn btn-primary btn-block btn-flat">{{ 'security.login.submit'|trans({}, 'MagentaCBookAdminBundle') }}</button>
+                        </div>
+                    </div>
+                </form>
+
+                {#<a href="{{ path('sonata_user_admin_resetting_request') }}">{{ 'forgotten_password'|trans({}, 'MagentaCBookAdminBundle') }}</a>#}
+                <a href="{{ path('magenta_user_resetting_request') }}">{{ 'resetting.request.submit'|trans({}, 'MagentaCBookAdminBundle') }}</a>
+            {% endblock %}
+        </div>
+    </div>
+
+{% endblock sonata_wrapper %}

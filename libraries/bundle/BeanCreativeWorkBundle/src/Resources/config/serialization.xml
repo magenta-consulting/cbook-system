@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<serializer xmlns="http://symfony.com/schema/dic/serializer-mapping"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/serializer-mapping
+        http://symfony.com/schema/dic/serializer-mapping/serializer-mapping-1.0.xsd"
+>
+    <class name="Bean\Component\CreativeWork\Model\CreativeWork">
+        <attribute name="parts">
+            <group>read_creative_work_parts</group>
+            <group>write_creative_work_parts</group>
+        </attribute>
+        <attribute name="partOf">
+            <group>read_creative_work_partOf</group>
+            <group>write_creative_work_partOf</group>
+        </attribute>
+        <attribute name="locale">
+            <group>read_creative_work</group>
+            <group>write_creative_work</group>
+        </attribute>
+        <attribute name="headline">
+            <group>read_creative_work</group>
+            <group>write_creative_work</group>
+        </attribute>
+        <attribute name="about">
+            <group>read_creative_work</group>
+            <group>write_creative_work</group>
+        </attribute>
+        <attribute name="text">
+            <group>read_creative_work</group>
+            <group>write_creative_work</group>
+        </attribute>
+    </class>
+</serializer>

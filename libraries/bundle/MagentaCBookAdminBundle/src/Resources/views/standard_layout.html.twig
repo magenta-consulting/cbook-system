@@ -1,0 +1,50 @@
+{% extends '@SonataAdmin/standard_layout.html.twig' %}
+{% trans_default_domain 'MagentaCBookAdminBundle' %}
+
+            {% block body_attributes -%}
+                class="sonata-bc skin-purple-light skin-red-light fixed
+                {% if app.request.cookies.get('sonata_sidebar_hide') -%}
+                    sidebar-collapse
+                {%- endif -%}"
+            {%- endblock -%}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        header, .box-shadow {
+            box-shadow: 2px 0px 12px rgb(51, 51, 51);
+            -webkit-box-shadow: 2px 4px 16px rgb(51, 51, 51);
+            -moz-box-shadow: 2px 4px 16px rgb(51, 51, 51);
+        }
+
+        body {
+            background-image: url({{ asset('assets/images/bg-origami.png') }});
+        }
+
+        body, .btn-primary {
+            background-color: #605ca8;
+        }
+
+        a {
+            color: #605ca8;
+        }
+
+        .btn-primary {
+            border-color: #4e4a88;;
+        }
+
+        .btn-primary.focus, .btn-primary:focus {
+            background-color: #3e3b6c;
+        }
+
+        .btn-primary:hover, .btn-primary:active, .btn-primary.hover, .btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .open > .dropdown-toggle.btn-primary.focus, .open > .dropdown-toggle.btn-primary:focus, .open > .dropdown-toggle.btn-primary:hover {
+            background-color: #575398;
+        }
+
+        .main-header, .logo, header nav, .main-header li.user-header {
+            background-image: url({{ asset('assets/images/bg-origami.png') }});
+            background-size: 400px auto;
+        }
+
+    </style>
+{% endblock stylesheets %}

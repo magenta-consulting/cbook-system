@@ -1,0 +1,41 @@
+{
+  "name": "beancomponent/creative-work-bundle",
+  "type": "symfony-bundle",
+  "description": "Provides a Bundle Integration for the CreativeWorkBundle.",
+  "keywords": [
+    "Symfony CreativeWork Bundle"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Peter Bean",
+      "email": "peterbean@beancomponent.com"
+    }
+  ],
+  "require": {
+    "php": "^5.6|^7.0",
+    "beancomponent/thing-bundle": "^0.1",
+    "beancomponent/creative-work": "^0.1"
+
+  },
+  "require-dev": {
+
+  },
+  "suggest": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Bean\\Bundle\\CreativeWorkBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Bean\\Bundle\\CreativeWorkBundle\\spec\\": "tests/spec/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.1-dev"
+    }
+  }
+}

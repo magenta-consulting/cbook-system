@@ -1,0 +1,477 @@
+{% extends '@MagentaCBookAdmin/Book/read-book.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {#<script src="{{ asset('build/manifest.js') }}"></script>#}
+    {#<script src="{{ asset('build/admin.js') }}"></script>#}
+    {#<script src="{{ asset('assets/pk2/js/paper-kit.js') }}"></script>#}
+    <script src="{{ asset('assets/jqtree/1.4.9/tree.jquery.js') }}"></script>
+
+    <script src="{{ asset('assets/froala/2.8.4/froala_editor.pkgd.min.js') }}"></script>
+    {{ block('javascripts_book') }}
+    <script>
+        window.environment = {
+            moveChapterEndPoint: '{{ path('admin_magenta_cbookmodel_book_chapter_move',{id: 0}) }}',
+            apiEndPoint: 'fake_end_point',
+            imageApiEndPoint: '{{ image_upload_endpoint }}',
+            fileApiEndPoint: '{{ file_upload_endpoint }}',
+            deleteChapterEndPoint: '{{ path('admin_magenta_cbookmodel_book_chapter_deleteChapter',{id:0}) }}'
+        }
+        $(document).ready(($) => {
+
+            $('.remove-chapter').click(function (e) {
+                let chapterId = $(this).data('objectid');
+                let chapterName = $(this).data('name');
+                $confirmDeleteModal = $('#confirm-delete-modal');
+                $confirmDeleteModal.find('.modal-title').html('Delete Confirmation');
+                $('#confirmDeleteText').html('Are you sure you want to delete <code>' + chapterName + '</code>?');
+                // $confirmDeleteModal.find('.modal-title').html('<h1>Are you sure you want to delete ' + chapterName + '</h1>');
+                $confirmDeleteModal.find('form').attr('action', window.environment.deleteChapterEndPoint.replace('0', chapterId));
+                $confirmDeleteModal.modal('show');
+            });
+
+            let $tocSidebar = $('#toc-sidebar');
+            $tocSidebar.on('tree.move', function (event) {
+                event.preventDefault();
+                event.move_info.do_move();
+                data = {
+                    'moved_node': event.move_info.moved_node.chapterId,
+                    'target_node': event.move_info.target_node.chapterId,
+                    'position': event.move_info.position,
+                    'previous_parent': event.move_info.previous_parent.chapterId
+                }
+                $.post(environment.moveChapterEndPoint.replace('0', event.move_info.moved_node.chapterId), data)
+            });
+            $tocSidebar.tree('setOption', 'dragAndDrop', true);
+            {% block toc_click %}
+            $tocSidebar.on(
+                'tree.click',
+                function (event) {
+                    // The clicked node is 'event.node'
+                    // var node = event.node;
+                    // alert(node.name);
+                    console.log('clicked in show', event);
+                    window.location = '{{ path('admin_magenta_cbookmodel_book_chapter_show',{id:0}) }}'.replace('0', event.node.id);
+                }
+            );
+            {% endblock %}
+
+            {% block onCreateLi %}
+            window.onCreateLi = function (node, $li) {
+                $li.append('<div data-name="' + node.name + '" data-objectid="' + node.id + '" class="remove-chapter btn btn-danger" style="font-size: 14px;;\n' +
+                    '    margin-left: 3px;\n' +
+                    ' margin-bottom: 1px;\n' +
+                    '    min-width: 10px;\n' +
+                    '"> <i class="fa fa-trash"> </i> </div>');
+                // $li.find('.jqtree-title').html(
+                //     `<a href="${node.href}">${node.name}</a>  <i class="fa fa-plus-circle" aria-hidden="true"> </i>`
+                // );
+            }
+            {% endblock %}
+
+
+            // $('#edit-button').click(() => {
+            //     $editable.froalaEditor({
+            //         saveInterval: 3500,
+            //         imageUploadURL: environment.imageApiEndPoint,
+            //         toolbarInline: true,
+            //         quickInsertButtons: ['image', 'video', 'embedly', 'table', 'ol', 'ul', 'hr'],
+            //         toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+            //     }).on('froalaEditor.image.uploaded', function (e, editor, response) {
+            //         console.log(e, editor, response)
+            //     })
+            //     $editable.addClass('editing');
+            //     $('#toc-sidebar').tree('setOption', 'dragAndDrop', true);
+            //     $('#save-button').show()
+            //     $('#edit-button').hide()
+            // })
+
+            $('.editable[data-objectid="{{ mainContentItem.id }}"][data-field="name"][data-type="main-content"]').froalaEditor({
+                key: 'UA10B7C4D5dC3E3H3C10B6B5D6E4A2C2C-7idabfD-11kF4obc1A-16eC-13fzzrB1twt==',
+                saveInterval: 3000,
+                saveURL: '{{ admin.generateUrl('contentEdit',{id: mainContentItem.id}) }}',
+                saveParam: 'content',
+                saveParams: {
+                    field: 'name'
+                },
+                imageUploadURL: environment.imageApiEndPoint,
+                imageUploadParam: 'binaryContent',
+                imageUploadParams: {
+                    context: 'content_image',
+                    organisation: {{ book.organisation.id }},
+                    creativeWork: {{ book.id }}
+                },
+                fileUploadURL: environment.fileApiEndPoint,
+                fileUploadParam: 'binaryContent',
+                fileUploadParams: {
+                    context: 'content_file',
+                    organisation: {{ book.organisation.id }},
+                    creativeWork: {{ book.id }}
+                },
+
+                toolbarInline: true,
+                quickInsertButtons: ['image', 'video', 'embedly', 'table', 'ol', 'ul', 'hr'],
+                toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+            });
+            $('.editable[data-objectid="{{ mainContentItem.id }}"][data-field="text"][data-type="main-content"]').froalaEditor({
+                key: 'UA10B7C4D5dC3E3H3C10B6B5D6E4A2C2C-7idabfD-11kF4obc1A-16eC-13fzzrB1twt==',
+                saveInterval: 3500,
+                saveURL: '{{ admin.generateUrl('contentEdit',{id: mainContentItem.id}) }}',
+                saveParam: 'content',
+                saveParams: {
+                    field: 'text'
+                },
+                imageUploadURL: environment.imageApiEndPoint,
+                imageUploadParam: 'binaryContent',
+                imageUploadParams: {
+                    context: 'content_image',
+                    organisation: {{ book.organisation.id }},
+                    creativeWork: {{ book.id }}
+                },
+                fileUploadURL: environment.fileApiEndPoint,
+                fileUploadParam: 'binaryContent',
+                fileUploadParams: {
+                    context: 'content_file',
+                    organisation: {{ book.organisation.id }},
+                    creativeWork: {{ book.id }}
+                },
+
+                toolbarInline: true,
+                quickInsertButtons: ['image', 'video', 'embedly', 'table', 'ol', 'ul', 'hr'],
+                toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']
+            });
+
+            {% for chapter in book.rootChapters %}
+            {#$('.editable[data-objectid="{{ chapter.id }}"][data-field="name"]').froalaEditor({#}
+            {#saveInterval: 3500,#}
+            {#saveURL: environment.apiEndPoint,#}
+            {#saveParam: 'content',#}
+            {#saveParams: {#}
+            {#field: 'name'#}
+            {#},#}
+            {#imageUploadURL: environment.imageApiEndPoint,#}
+            {#toolbarInline: true,#}
+            {#quickInsertButtons: ['image', 'video', 'embedly', 'table', 'ol', 'ul', 'hr'],#}
+            {#toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'color', 'emoticons', '-', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'indent', 'outdent', '-', 'insertImage', 'insertLink', 'insertFile', 'insertVideo', 'undo', 'redo']#}
+            {#});#}
+            {% endfor %}
+
+            $editable = $('.editable');
+
+            $editable.on('froalaEditor.image.uploaded', function (e, editor, response) {
+                console.log(e, editor, response)
+            });
+            $editable.addClass('editing');
+
+            $saveStatus = $('#lbl-save-status');
+            $editable.on('froalaEditor.contentChanged', function (e, editor) {
+                console.log('contentChanged fire', e, editor, $(e.currentTarget).data('name'))
+                $saveStatus.removeAttr('class');
+                $saveStatus.attr('class', 'label label-default');
+                $saveStatus.text('Editing');
+            });
+            $editable.on('froalaEditor.save.before', function (e, editor, html) {
+                console.log('before save', e, editor, html);
+                $saveStatus.removeAttr('class');
+                $saveStatus.attr('class', 'label label-info');
+                $saveStatus.text('Auto-saving');
+            });
+            $editable.on('froalaEditor.save.after', function (e, editor, data) {
+                console.log('after save', e, editor, data);
+                $saveStatus.removeAttr('class');
+                $saveStatus.attr('class', 'label label-success');
+                $saveStatus.html('Saved ' + $(e.currentTarget).data('field') + ' of "<i>' + '{{ mainContentItem.name }}' + '</i>"'); // $(e.currentTarget).data('type')
+            });
+            $editable.on('froalaEditor.save.error', function (e, editor, error, response) {
+                console.log('error on save', e, editor, error, response);
+                $saveStatus.removeAttr('class');
+                $saveStatus.attr('class', 'label label-danger');
+                $saveStatus.html('Error, Couldn\'t save ' + $(e.currentTarget).data('field') + ' of "<i>' + '{{ mainContentItem.name }}' + '</i>"!!!'); //  $(e.currentTarget).data('type')
+            });
+            $('#btn-undo').click(() => {
+                $editable.froalaEditor('commands.undo');
+            });
+            $('#btn-redo').click(() => {
+                $editable.froalaEditor('commands.redo');
+            });
+            window.saveBookContentChanges = () => {
+                var form = {};
+                $editable.each(function (i) {
+                    form[`${$(this).data('name')}`] = $(this).html()
+                })
+                console.log(form)
+                $.post(environment.apiEndPoint, form)
+                    .done(function (data) {
+                        console.log(data)
+                    })
+                    .fail(function (error) {
+                        console.log(error)
+                    })
+            }
+
+            $('#save-button').click(() => {
+                $editable.froalaEditor('destroy');
+                $editable.removeClass('editing');
+                $('#toc-sidebar').tree('setOption', 'dragAndDrop', false);
+                $('#save-button').hide()
+                $('#edit-button').show()
+                saveBookContentChanges();
+            })
+        })
+    </script>
+{% endblock %}
+
+{% block new_chapter %}
+    <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#new-chapter-modal"><i
+                class="fa fa-plus"></i> New Chapter
+    </button>
+
+    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#publication-modal"><i
+                class="fa fa-upload"></i> Publish
+    </button>
+{% endblock %}
+
+{% block pagination %}{% endblock %}
+{% block toc_heading %}
+    <a href="{{ path('admin_magenta_cbookmodel_book_book_show',{id: book.id}) }} "> {{ parent() }}</a>
+{% endblock %}
+{% block toc_help %}<span
+        class="text-muted">Move a chapter around to re-position or nest it inside another chapter.</span>{% endblock %}
+{% block toc_modal %}{% endblock %}
+
+{% block content_title %}{{ mainContentItem.name|raw }}{% endblock %}
+
+{% block toc_tree_data %}
+    {% import '@MagentaCBookAdmin/Book/macro_chapter_tree.html.twig' as toc_tree %}
+    var toc = {{ toc_tree.navigate_child(false, book.rootChapters,0) }}
+{% endblock %}
+
+{% block chapters %}
+    {% if subContentItems|length > 0 %}
+        <code>Click on Chapter title to go to Edit Page of that Chapter</code>
+    {% endif %}
+    {% for i, chapter in subContentItems %}
+        <div class="editable" data-objectid="{{ chapter.id }}" data-type="chapter" data-field="name">
+            <a href="{{ path('admin_magenta_cbookmodel_book_chapter_show',{id: chapter.id}) }}">
+                <strong
+                        id="chapter-{{ i+1 }}"
+                        class="offset-anchor chapter-name">{{ i+1 }}. {{ chapter.name|raw }}
+                </strong>
+            </a>
+            <hr style="margin-top:1px;margin-bottom:5px; border-bottom: dashed; border-width: thin;"/>
+        </div>
+        <div class="editable" data-name="chapter-{{ chapter.id }}-text">
+            {% set chapterText = chapter.text|striptags %}
+            {#{{ chapter.text | raw }}#}
+            {{ ( chapterText|length > 250 ? chapterText|slice(0, 250) ~ '...' : chapterText )|raw}}
+        </div>
+        <div>
+            {#{% for ii, sub in chapter.subChapters %}#}
+            {#<div class="editable" data-objectid="{{ sub.id }}" data-type="chapter" data-field="name"><h4#}
+            {#id="chapter-{{ i+1 }}-{{ ii+1 }}" class="offset-anchor chapter-name">{{ i+1 }}#}
+            {#.{{ ii+1 }}. {{ sub.name }}</h4></div>#}
+            {#<div class="editable" data-name="chapter-{{ sub.id }}-text">{{ sub.text | raw }}</div>#}
+            {#{% endfor %}#}
+        </div>
+    {% endfor %}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .d-md-none {
+            display: none;
+        }
+
+        .navbar-top-links li a, .navbar-top-links li span {
+            min-height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .positionh {
+                /*position: relative !important;*/
+            }
+        }
+
+        .content-wrapper {
+            padding-top: inherit !important;
+        }
+
+        .book-content, .book-toc > div {
+            background-color: whitesmoke;
+            border-radius: 7px;
+            /*background-clip: content-box;*/
+            margin-bottom: 5px;
+        }
+
+        .book-content {
+            /*margin-left: 1px;*/
+        }
+
+        .jqtree-selected > div > a > i {
+            padding-left: 5px;
+            color: white;
+        }
+
+        .book-toc > div {
+            padding: 6px;
+            /*margin-right: 1px;*/
+        }
+
+        li.jqtree-selected > div.jqtree-element {
+            background-color: #4e4a88;
+            border-radius: 5px;
+        }
+
+        ul.jqtree_common > li.jqtree-selected > div > span {
+            color: white;
+        }
+
+        /* flex for remove button */
+        li.jqtree_common {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        li.jqtree_common > div.jqtree-element {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: left;
+        }
+
+        /* flex for remove button but subchapter */
+        ul.jqtree_common, div.jqtree_common {
+            flex: 1;
+            min-width: 50%;
+        }
+
+        li.jqtree-folder {
+            flex-wrap: wrap;
+        }
+
+        /* editor white boxes */
+        .editable.fr-box.fr-inline.editing {
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        /* Flash Messages */
+        .alert {
+            margin-top: 26px;
+            margin-bottom: 0px;
+        }
+
+        /* To keep a distance with Undo Redo button */
+        .container {
+            margin-bottom: 45px;
+        }
+
+        /* To keep a distance with Top Nav */
+        .content {
+            margin-top: 20px;
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="{{ asset('assets/pk2/css/nucleo-icons.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('build/css/app.css') }}"/>
+    <link rel="stylesheet"
+          href="{{ asset('bundles/sonatacore/vendor/components-font-awesome/css/font-awesome.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('assets/codemirror/codemirror.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('assets/froala/2.8.4/froala_editor.pkgd.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('assets/froala/2.8.4/froala_style.min.css') }}"/>
+{% endblock %}
+{% block content %}
+    {{ block('body') }}
+    <!-- Publication Modal -->
+    <div class="modal fade" id="publication-modal" tabindex="-1" role="dialog" aria-labelledby="publicationLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" action="{{ path('admin_magenta_cbookmodel_book_book_publish',{'id':book.id}) }}">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="publicationLabel">Publish "{{ book.name }}"</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h5>Please enter the edition text for the new publication</h5>
+                        <input class="form-control" placeholder="Book Edition" name="edition-text"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="new-chapter-modal" tabindex="-1" role="dialog" aria-labelledby="newChapterLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" action="{{ path('admin_magenta_cbookmodel_book_chapter_createChapter') }}">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="newChapterLabel">Create a chapter in "{{ book.name }}"</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <input class="form-control" placeholder="Chapter Name" name="chapter-name"/>
+                        <input type="hidden" name="book-id" value="{{ book.id }}"/>
+                        {% if currentChapter is defined and currentChapter is not empty %}
+                            <input type="hidden" name="parent-chapter-id" value="{{ currentChapter.id }}"/>
+                            <hr/>
+                            <input class="form-control" type="checkbox" name="is-subchapter"/> This is a sub-chapter of
+                            <code>{{ currentChapter.name }}</code>
+                        {% endif %}
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal fade" id="confirm-delete-modal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post" action="">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="confirmDeleteLabel"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <h3 id="confirmDeleteText"></h3>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Confirm Delete Modal End -->
+
+    <div class="sonata-ba-form-actions well well-small form-actions text-center">
+        {#<button id="edit-button" class="btn btn-success" type="button" name="btn_create_and_create"><i#}
+        {#class="fa fa-pencil"#}
+        {#aria-hidden="true" style="display: none;"></i> {{ 'layout.start_editing'|trans({}, 'MagentaCBookAdminBundle') }}</button>#}
+        {#<button id="save-button" class="btn btn-success" type="button" name="btn_create_and_create"#}
+        {#style="display: none;"><i class="fa fa-save"#}
+        {#aria-hidden="true"></i> {{ 'layout.save'|trans({}, 'MagentaCBookAdminBundle') }}#}
+        {#</button>#}
+        <div class="" id="lbl-save-status"></div>
+        <button class="btn btn-default" id="btn-undo"><i class="fa fa-undo"> Undo</i></button>
+        <button class="btn btn-default" id="btn-redo"><i class="fa fa-redo fa-repeat"> Redo</i></button>
+    </div>
+{% endblock content %}

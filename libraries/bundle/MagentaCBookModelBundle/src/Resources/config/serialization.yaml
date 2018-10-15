@@ -1,0 +1,37 @@
+Magenta\Bundle\CBookModelBundle\Entity\Media\Media:
+    attributes:
+        contentUrl:
+            groups: ['sonata_api_read','sonata_api_write']
+        context:
+          groups: ['sonata_api_read','sonata_api_write']
+
+#Magenta\Bundle\CBookModelBundle\Entity\Organisation\IndividualMember:
+#    attributes:
+#        id:
+#            groups: ['read_member']
+#        organization:
+#            groups: ['read_organisation','write_organisation']
+#        person:
+#            groups: ['read_app_person','write_app_person']
+
+#Magenta\Bundle\CBookModelBundle\Entity\Organisation\OrgBook:
+#    attributes:
+#        id:
+#            groups: ['read_thing']
+
+#Magenta\Bundle\CBookModelBundle\Entity\Person\Person:
+#    attributes:
+#        id:
+#            groups: ['read_app_person']
+#        birthDate:
+#            groups: ['read_app_person','write_app_person']
+#        familyName:
+#            groups: ['read_app_person','write_app_person']
+#        givenName:
+#            groups: ['read_app_person','write_app_person']
+
+
+#Magenta\Bundle\CBookModelBundle\Entity\Organisation\Organisation:
+#    attributes:
+#        logo:
+#            groups: ['read_organisation','write_organisation']

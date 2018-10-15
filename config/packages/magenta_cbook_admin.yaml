@@ -1,0 +1,161 @@
+parameters:
+    # Adds a fallback DATABASE_URL if the env var is not set.
+    # This allows you to run cache:warmup even if your
+    # environment variables are not available yet.
+    # You should not need to change this value.
+    SYSTEM_PREFIX: '%env(SYSTEM_PREFIX)%'
+    CBOOK_PREFIX: '%env(CBOOK_PREFIX)%'
+
+    sonata.media.admin.media.class: Magenta\Bundle\CBookAdminBundle\Admin\Media\MediaAdmin
+    sonata.media.admin.media.controller: Magenta\Bundle\CBookAdminBundle\Admin\Media\MediaAdminController
+
+twig:
+    form_themes:
+        - '@SonataFormatter/Form/formatter.html.twig'
+        - '@SonataCore/Form/datepicker.html.twig'
+#        - '@SonataMedia/Form/media_widgets.html.twig'
+        - '@MagentaCBookAdmin/Form/media_widgets.html.twig'
+
+    globals:
+        media_endpoint: '%MEDIA_API_BASE_URL%%MEDIA_API_PREFIX%'
+        image_upload_endpoint: '%MEDIA_API_BASE_URL%%MEDIA_API_PREFIX%/providers/sonata.media.provider.image/media.json'
+        file_upload_endpoint: '%MEDIA_API_BASE_URL%%MEDIA_API_PREFIX%/providers/sonata.media.provider.file/media.json'
+
+
+fos_ck_editor:
+    default_config: default
+    configs:
+        default:
+            # default toolbar plus Format button
+            toolbar:
+            - [Bold, Italic, Underline, -, Cut, Copy, Paste,
+              PasteText, PasteFromWord, -, Undo, Redo, -,
+              NumberedList, BulletedList, -, Outdent, Indent, -,
+              Blockquote, -, Image, Link, Unlink, Table]
+            - [Format, Maximize, Source]
+
+            filebrowserBrowseRoute: admin_magenta_cbookmodel_media_media_ckeditor_browser
+            filebrowserBrowseRouteParameters:
+                provider: sonata.media.provider.file
+                context: book_file # Optional, to upload in a custom context
+
+            filebrowserImageBrowseRoute: admin_magenta_cbookmodel_media_media_ckeditor_browser
+            # Display images by default when clicking the image dialog browse button
+            filebrowserImageBrowseRouteParameters:
+                provider: sonata.media.provider.image
+                context: book_image # Optional, to upload in a custom context
+
+            filebrowserUploadRoute: admin_magenta_cbookmodel_media_media_ckeditor_upload
+            filebrowserUploadRouteParameters:
+                provider: sonata.media.provider.file
+                context: book_file # Optional, to upload in a custom context
+
+            # Upload file as image when sending a file from the image dialog
+            filebrowserImageUploadRoute: admin_magenta_cbookmodel_media_media_ckeditor_upload
+            filebrowserImageUploadRouteParameters:
+                provider: sonata.media.provider.image
+                context: book_image # Optional, to upload in a custom context
+                format: big # Optional, media format or original size returned to editor
+
+sonata_formatter:
+    ckeditor:
+        templates:
+            browser: '@SonataFormatter/Ckeditor/browser.html.twig'
+            upload: '@MagentaCBookAdmin/Ckeditor/upload.html.twig'
+
+    default_formatter: text
+    formatters:
+        markdown:
+            service: sonata.formatter.text.markdown
+            extensions:
+                - sonata.formatter.twig.control_flow
+                - sonata.formatter.twig.gist
+        #        - sonata.media.formatter.twig #keep this commented unless you are using media bundle.
+
+        text:
+            service: sonata.formatter.text.text
+            extensions:
+                - sonata.formatter.twig.control_flow
+                - sonata.formatter.twig.gist
+        #        - sonata.media.formatter.twig
+
+
+        rawhtml:
+            service: sonata.formatter.text.raw
+            extensions:
+                - sonata.formatter.twig.control_flow
+                - sonata.formatter.twig.gist
+        #        - sonata.media.formatter.twig
+
+
+        richhtml:
+            service: sonata.formatter.text.raw
+            extensions:
+                - sonata.formatter.twig.control_flow
+                - sonata.formatter.twig.gist
+        #        - sonata.media.formatter.twig
+
+        twig:
+            service: sonata.formatter.text.twigengine
+            extensions: [] # Twig formatter cannot have extensions
+
+sonata_admin:
+    title: 'CloudBook'
+    options:
+        title_mode: 'single_text'
+
+    templates:
+        layout: '@MagentaCBookAdmin/standard_layout.html.twig'
+        user_block: '@MagentaCBookAdmin/Core/user_block.html.twig'
+        list: '@MagentaCBookAdmin/CRUD/list.html.twig'
+        delete: '@MagentaCBookAdmin/CRUD/delete.html.twig'
+
+    assets:
+        extra_stylesheets:
+            - bundles/sonataadmin/vendor/admin-lte/dist/css/skins/skin-purple-light.min.css
+            - bundles/magentacbookadmin/admin.css
+        remove_stylesheets:
+            - bundles/sonataadmin/vendor/admin-lte/dist/css/skins/skin-black.min.css
+    dashboard:
+        blocks: ~
+#            - { type: sonata.admin.block.admin_list, position: left }
+
+        groups:
+            knowledge_base:
+                label: dashboard.knowledge_base
+                icon: '<i class="fa fa-book"></i>'
+                items:
+                    - sonata.classification.admin.category
+                    - sonata.media.admin.media
+
+            system:
+                label: dashboard.system
+                icon: '<i class="fa fa-users"></i>'
+                items:
+                    - Magenta\Bundle\CBookAdminBundle\Admin\Person\PersonAdmin
+                    - Magenta\Bundle\CBookAdminBundle\Admin\Organisation\OrganisationAdmin
+                    - Magenta\Bundle\CBookAdminBundle\Admin\Organisation\IndividualGroupAdmin
+                    - Magenta\Bundle\CBookAdminBundle\Admin\Organisation\IndividualMemberAdmin
+
+    #                    - Sonata\MediaBundle\Admin\ORM\MediaAdmin
+#                    - sonata.user.admin.group
+#                    - sonata.classification.admin.context
+#                    - sonata.classification.admin.category
+#                    - sonata.classification.admin.collection
+#                    - sonata.classification.admin.tag
+#                    - sonata.notification.admin.message
+
+    title_logo: https://www.magenta-consulting.com/images/logo.png
+    search: false
+
+sonata_classification:
+    admin:
+        category:
+            class: Magenta\Bundle\CBookAdminBundle\Admin\Classification\CategoryAdmin
+            controller: 'Magenta\Bundle\CBookAdminBundle\Admin\Classification\CategoryAdminController'
+            translation: SonataClassificationBundle
+
+sonata_block:
+    blocks:
+        sonata.admin.block.admin_list:
+            contexts: [admin]

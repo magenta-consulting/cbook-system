@@ -1,0 +1,59 @@
+services:
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    Magenta\Bundle\CBookAdminBundle\:
+        resource: '../../*'
+#        exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    Magenta\Bundle\CBookAdminBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments']
+
+    magenta_admin_logout_handler:
+        class: Magenta\Bundle\CBookAdminBundle\Security\Handler\LogoutHandler
+
+    magenta_cbook.admin.security.handler.role:
+        class: '%sonata.admin.security.handler.role.class%'
+        public: false
+        arguments:
+        - '@security.authorization_checker'
+        - [ '%sonata.admin.configuration.security.role_super_admin%' ]
+        - '@service_container'
+
+    magenta_cbook.user.editable_role_builder:
+        class: Magenta\Bundle\CBookAdminBundle\Security\EditableRolesBuilder
+        arguments:
+        - '@security.token_storage'
+        - '@security.authorization_checker'
+        - '@sonata.admin.pool'
+        - '%security.role_hierarchy.roles%'
+
+    magenta_cbook.user.form.type.security_roles:
+        class: Magenta\Bundle\CBookAdminBundle\Form\Type\SecurityRolesType
+        tags:
+        - {name: "form.type", alias: "sonata_security_roles"}
+        arguments:
+        - '@magenta_cbook.user.editable_role_builder'
+
+    magenta_swarranty.twig.extension:
+        class: Magenta\Bundle\CBookAdminBundle\Twig\MagentaTwigExtension
+        tags: ['twig.extension']
+        arguments:
+        - '@service_container'
+    Magenta\Bundle\SWarrantyAdminBundle\Twig\MagentaTwigExtension:
+        alias: magenta_swarranty.twig.extension
+
+    Magenta\Bundle\CBookAdminBundle\Service\Organisation\OrganisationService:
+        class: Magenta\Bundle\CBookAdminBundle\Service\Organisation\OrganisationService
+        arguments:
+        - '@service_container'
+        public: true
+
+    Magenta\Bundle\CBookAdminBundle\Form\Type\OrgAwareCategorySelectorType:
+        class: Magenta\Bundle\CBookAdminBundle\Form\Type\OrgAwareCategorySelectorType
+        arguments:
+            - '@sonata.classification.manager.category'
+        tags:
+            - {name: "form.type", alias: "sonata_security_roles"}
+        public: true

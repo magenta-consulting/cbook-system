@@ -6,6 +6,24 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        admin:
+            context:        main
+            provider:       magenta_user
+            pattern:        /system(.*)
+            form_login:
+                login_path:     /system/login
+                use_forward:    false
+                check_path:     /system/login_check
+                failure_path:   null
+                default_target_path: /system/dashboard
+            logout:
+                path:           /system/logout
+                success_handler: magenta_admin_logout_handler
+
+            anonymous:          true
+            switch_user:        true
+
         main:
             anonymous: true
 
@@ -20,5 +38,18 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+    # - { path: ^/profile, roles: ROLE_USER }
+    - { path: ^/front, role: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/system/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/system/logout$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/system/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/system/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/system, roles: ROLE_SONATA_ADMIN }
+
+    - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    #        - { path: ^/api, roles: IS_AUTHENTICATED_ANONYMOUSLY, ips: ['%env(DEV_IP)%'] }
+    - { path: ^/api, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    #        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
+
+    # ...
+    - { path: ^/api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }

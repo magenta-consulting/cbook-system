@@ -1,7 +1,16 @@
 bean_dev_tool:
-    library_source: \wamp31\www\libraries\cbook\
-    library_workspace: \wamp31\www\thuvien\book-system\libraries\
+    library_source: \workspace\libraries\cbook\
+    library_workspace: \workspace\magenta\cbook\system\libraries\
     components: ~
     bundles:
-        - MagentaCBookyModelBundle
+        - BeanSonataMediaBundle
+        - BeanBookBundle
+        - BeanCreativeWorkBundle
+        - BeanMediaBundle
+        - BeanPersonBundle
+        - BeanThingBundle
+        - BeanOrganizationBundle
+
         - MagentaCBookAdminBundle
+        - MagentaCBookModelBundle
+        - MagentaCBookJWTBundle
