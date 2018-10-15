@@ -1,0 +1,7 @@
+bean_dev_tool:
+    library_source: \wamp31\www\libraries\cbook\
+    library_workspace: \wamp31\www\thuvien\book-system\libraries\
+    components: ~
+    bundles:
+        - MagentaCBookyModelBundle
+        - MagentaCBookAdminBundle
