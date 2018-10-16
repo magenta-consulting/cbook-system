@@ -235,6 +235,8 @@ sonata_media:
     providers:
         image:
             filesystem: sonata.media.filesystem.s3
+        file:
+            filesystem: sonata.media.filesystem.s3
 
     filesystem:
         local:
