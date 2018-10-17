@@ -193,6 +193,8 @@ class OrganisationAdmin extends BaseAdmin
         foreach ($ausers as $u) {
             $object->addAdminUser($u);
         }
+        $logo = $object->getLogo();
+        $logo->setOrganization($object);
     }
 
     /**
