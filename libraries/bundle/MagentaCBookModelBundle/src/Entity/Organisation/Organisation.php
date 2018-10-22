@@ -188,12 +188,41 @@ class Organisation extends OrganizationModel
         }
     }
 
+    /**
+     * @var \DateTime|null
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $synchronisedAt;
+
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $wellnessId;
 
     /**
      * @var boolean|null
      * @ORM\Column(type="boolean",nullable=true)
      */
     protected $linkedToWellness;
+
+    /**
+     * @var string|null
+     * @ORM\Column(length=150, nullable=true)
+     */
+    protected
+        $regNo;
+
+    /**
+     * @var string|null
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $wellnessPin;
+    /**
+     * @var string|null
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $wellnessEmployeeCode;
 
     /**
      * @var string
@@ -320,6 +349,14 @@ class Organisation extends OrganizationModel
     }
 
     /**
+     * @return bool
+     */
+    public function isLinkedToWellness(): bool
+    {
+        return !empty($this->linkedToWellness);
+    }
+
+    /**
      * @param bool|null $linkedToWellness
      */
     public function setLinkedToWellness(?bool $linkedToWellness): void
@@ -327,5 +364,52 @@ class Organisation extends OrganizationModel
         $this->linkedToWellness = $linkedToWellness;
     }
 
+    /**
+     * @return int
+     */
+    public function getWellnessId(): int
+    {
+        return $this->wellnessId;
+    }
+
+    /**
+     * @param int $wellnessId
+     */
+    public function setWellnessId(int $wellnessId): void
+    {
+        $this->wellnessId = $wellnessId;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getRegNo(): ?string
+    {
+        return $this->regNo;
+    }
+
+    /**
+     * @param null|string $regNo
+     */
+    public function setRegNo(?string $regNo): void
+    {
+        $this->regNo = $regNo;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getSynchronisedAt(): ?\DateTime
+    {
+        return $this->synchronisedAt;
+    }
+
+    /**
+     * @param \DateTime|null $synchronisedAt
+     */
+    public function setSynchronisedAt(?\DateTime $synchronisedAt): void
+    {
+        $this->synchronisedAt = $synchronisedAt;
+    }
 
 }

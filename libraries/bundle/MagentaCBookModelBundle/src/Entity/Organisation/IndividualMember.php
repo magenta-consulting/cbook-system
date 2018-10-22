@@ -126,6 +126,31 @@ class IndividualMember extends MemberModel
     protected $role;
 
     /**
+     * @var \DateTime|null
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $synchronisedAt;
+
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $wellnessId;
+
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $wellnessPin;
+
+
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $wellnessEmployeeCode;
+
+    /**
      * @var boolean
      * @ORM\Column(type="boolean", options={"default":true})
      */
@@ -267,5 +292,69 @@ class IndividualMember extends MemberModel
     public function getOrganization(): ?OrganizationInterface
     {
         return $this->organization;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getSynchronisedAt(): ?\DateTime
+    {
+        return $this->synchronisedAt;
+    }
+
+    /**
+     * @param \DateTime|null $synchronisedAt
+     */
+    public function setSynchronisedAt(?\DateTime $synchronisedAt): void
+    {
+        $this->synchronisedAt = $synchronisedAt;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWellnessId(): int
+    {
+        return $this->wellnessId;
+    }
+
+    /**
+     * @param int $wellnessId
+     */
+    public function setWellnessId(int $wellnessId): void
+    {
+        $this->wellnessId = $wellnessId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWellnessPin(): int
+    {
+        return $this->wellnessPin;
+    }
+
+    /**
+     * @param int $wellnessPin
+     */
+    public function setWellnessPin(int $wellnessPin): void
+    {
+        $this->wellnessPin = $wellnessPin;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWellnessEmployeeCode(): int
+    {
+        return $this->wellnessEmployeeCode;
+    }
+
+    /**
+     * @param int $wellnessEmployeeCode
+     */
+    public function setWellnessEmployeeCode(int $wellnessEmployeeCode): void
+    {
+        $this->wellnessEmployeeCode = $wellnessEmployeeCode;
     }
 }

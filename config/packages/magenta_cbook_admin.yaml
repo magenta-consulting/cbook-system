@@ -148,6 +148,10 @@ sonata_admin:
     title_logo: https://www.magenta-consulting.com/images/logo.png
     search: false
 
+sonata_notification:
+    admin:
+        enabled: true
+
 sonata_classification:
     admin:
         category:

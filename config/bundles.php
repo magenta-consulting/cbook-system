@@ -36,11 +36,10 @@ return [
     Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle::class => ['all' => true],
     Sonata\ClassificationBundle\SonataClassificationBundle::class => ['all' => true],
     Knp\DoctrineBehaviors\Bundle\DoctrineBehaviorsBundle::class => ['all' => true],
-
     Magenta\Bundle\CBookAdminBundle\MagentaCBookAdminBundle::class => ['all' => true, 'test' => true],
     Magenta\Bundle\CBookModelBundle\MagentaCBookModelBundle::class => ['all' => true, 'test' => true],
     Magenta\Bundle\CBookJWTBundle\MagentaCBookJWTBundle::class => ['all' => true, 'test' => true],
     Bean\Bundle\MediaBundle\BeanMediaBundle::class => ['all' => true, 'test' => true],
     Bean\Bundle\PersonBundle\BeanPersonBundle::class => ['all' => true, 'test' => true],
-
+    Sonata\NotificationBundle\SonataNotificationBundle::class => ['all' => true],
 ];
