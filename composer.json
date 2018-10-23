@@ -41,6 +41,7 @@
         "knplabs/doctrine-behaviors": "^1.5",
         "aws/aws-sdk-php": "^3.56",
         "sonata-project/notification-orm-pack": "^1.0",
+        "phpoffice/phpspreadsheet": "^1.5",
         "symfony/webpack-encore-pack": "^1.0"
     },
     "require-dev": {
