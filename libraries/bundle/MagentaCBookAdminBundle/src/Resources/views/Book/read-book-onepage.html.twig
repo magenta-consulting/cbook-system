@@ -8,7 +8,7 @@
         }
 
         .card-body {
-            padding-top: 0px;
+            padding: 0px;
         }
 
         .card-body p {
@@ -17,17 +17,17 @@
     </style>
 {% endblock %}
 
-{% block nav_title %}
-    <div class="dropdown chapter-nav">
-            <span id="spy-chapter-navtitle">
-                {% block nav_title_text %}
-                    <a href="{{ path('magenta_book_index',{orgSlug:orgSlug,accessCode:accessCode,employeeCode:employeeCode}) }}">
-                        Your book on the cloud
-                    </a>
-                {% endblock %}
-            </span>
-    </div>
-{% endblock %}
+{#{% block nav_title %}#}
+    {#<div class="dropdown chapter-nav">#}
+            {#<span id="spy-chapter-navtitle">#}
+                {#{% block nav_title_text %}#}
+                    {#<a href="{{ path('magenta_book_index',{orgSlug:orgSlug,accessCode:accessCode,employeeCode:employeeCode}) }}">#}
+                        {#Your book on the cloud#}
+                    {#</a>#}
+                {#{% endblock %}#}
+            {#</span>#}
+    {#</div>#}
+{#{% endblock %}#}
 
 {% block body %}
     {#<div style="padding-top:35px;"></div>#}

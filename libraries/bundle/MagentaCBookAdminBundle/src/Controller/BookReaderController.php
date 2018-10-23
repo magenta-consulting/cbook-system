@@ -52,10 +52,17 @@ class BookReaderController extends Controller
 
     public function indexAction($orgSlug, $accessCode, $employeeCode)
     {
-        $this->checkAccess($accessCode, $employeeCode);
+        try {
+            $this->checkAccess($accessCode, $employeeCode);
+        } catch (UnauthorizedHttpException $e) {
+            return new RedirectResponse($this->get('router')->generate('magenta_book_login',
+                [
+                    'orgSlug' => $orgSlug
+                ]));
+        }
+
         $member = $this->getMemberByPinCodeEmployeeCode($accessCode, $employeeCode);
         $books = $member->getBooksToRead();
-
 
         return $this->render('@MagentaCBookAdmin/Book/index.html.twig', [
             'logo' => $member->getOrganization()->getLogo(),
