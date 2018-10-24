@@ -12,6 +12,8 @@ parameters:
     PDF_API_BASE_URL:  '%env(resolve:PDF_API_BASE_URL)%'
     PDF_DOWNLOAD_PREFIX: '%env(resolve:PDF_DOWNLOAD_PREFIX)%'
 
+    WELLNESS_EVOUCHER_BASE_URL: '%env(resolve:WELLNESS_EVOUCHER_BASE_URL)%'
+
     sonata.classification.manager.category.class: Magenta\Bundle\CBookModelBundle\Service\Classification\CategoryManager
     #    sonata.media.provider.youtube.class: Application\Sonata\MediaBundle\Provider\AppYouTubeProvider
     #    sonata.media.provider.image.class: Application\Sonata\MediaBundle\Provider\AppImageProvider
@@ -308,7 +310,9 @@ sonata_media:
             providers:
             - sonata.media.provider.image
             formats:
-                small: { width: 200 , quality: 70}
+                small: { width: 192 , quality: 70}
+                upper_small: { width: 300 , quality: 70}
+                medium: { width: 600 , quality: 70}
             download:
                 strategy: sonata.media.security.public_strategy
                 mode: http
