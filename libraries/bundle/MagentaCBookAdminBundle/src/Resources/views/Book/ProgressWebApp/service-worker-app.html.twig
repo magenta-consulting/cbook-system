@@ -38,8 +38,8 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function (event) {
     console.log('The service worker is serving the asset.');
-    evt.respondWith(fromNetwork(evt.request, 400).catch(function () {
-        return fromCache(evt.request);
+    event.respondWith(fromNetwork(event.request, 400).catch(function () {
+        return fromCache(event.request);
     }));
 
     /**
