@@ -72,7 +72,8 @@ function fromNetwork(request, timeout) {
 
 			caches.open(CACHE_NAME)
 				.then(function(cache) {
-					cache.put(event.request, responseToCache);
+					console.log('cache.put');
+					cache.put(request, responseToCache);
 				});
 
 			return response;
