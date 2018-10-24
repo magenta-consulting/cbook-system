@@ -194,6 +194,20 @@ class Organisation extends OrganizationModel
         }
     }
 
+
+    /**
+     * @param Media|null $appIcon
+     */
+    public function setAppIcon(?Media $appIcon): void
+    {
+        $this->appIcon = $appIcon;
+        if (!empty($appIcon)) {
+            $appIcon->setAppIconOrganisation($this);
+            $appIcon->setOrganization($this);
+        }
+
+    }
+
     /**
      * @var \DateTime|null
      * @ORM\Column(type="datetime", nullable=true)
@@ -426,11 +440,4 @@ class Organisation extends OrganizationModel
         return $this->appIcon;
     }
 
-    /**
-     * @param Media|null $appIcon
-     */
-    public function setAppIcon(?Media $appIcon): void
-    {
-        $this->appIcon = $appIcon;
-    }
 }
