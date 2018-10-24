@@ -38,7 +38,7 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function(event) {
 	console.log('The service worker is serving the asset.');
-	if (event.request.url == '{{ app.request.schemeAndHttpHost ~ ' / ' ~ orgSlug ~ ' / ' ~ accessCode ~ ' / ' ~ employeeCode  }}') {
+	if (event.request.url.indexOf('book') == -1) {
 		console.log('load from network beofre cache for index page');
 		event.respondWith(fromNetwork(event.request, 400).catch(function() {
 			return fromCache(event.request);
@@ -61,7 +61,7 @@ function fromNetwork(request, timeout) {
 		function(response) {
 			// Check if we received a valid response
 			if (!response || response.status !== 200 || response.type !== 'basic') {
-			return response;
+				return response;
 			}
 
 			// IMPORTANT: Clone the response. A response is a stream
