@@ -43,8 +43,11 @@ self.addEventListener('fetch', function(event) {
 		event.respondWith(fromNetwork(event.request, 400).catch(function() {
 			return fromCache(event.request);
 		}));
+	} else {
+		event.respondWith(fromCache(event.request, 400).catch(function() {
+			return fromNetwork(event.request);
+		}));
 	}
-
 });
 
 function fromNetwork(request, timeout) {
