@@ -169,6 +169,12 @@ class OrganisationAdmin extends BaseAdmin
                 'context' => 'organisation_logo',
                 'new_on_update' => false
             ))
+            ->add('appIcon', MediaType::class, array(
+                'provider' => 'sonata.media.provider.image',
+                'context' => 'organisation_logo',
+                'new_on_update' => false
+            ))
+
 //                ->add('admin')
             ->end();
 

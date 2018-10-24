@@ -177,6 +177,12 @@ class Organisation extends OrganizationModel
     protected $logo;
 
     /**
+     * @var Media|null
+     * @ORM\OneToOne(targetEntity="Magenta\Bundle\CBookModelBundle\Entity\Media\Media", mappedBy="appIconOrganisation", cascade={"persist","merge"})
+     */
+    protected $appIcon;
+
+    /**
      * @param Media|null $logo
      */
     public function setLogo(?Media $logo): void
@@ -412,4 +418,19 @@ class Organisation extends OrganizationModel
         $this->synchronisedAt = $synchronisedAt;
     }
 
+    /**
+     * @return Media|null
+     */
+    public function getAppIcon(): ?Media
+    {
+        return $this->appIcon;
+    }
+
+    /**
+     * @param Media|null $appIcon
+     */
+    public function setAppIcon(?Media $appIcon): void
+    {
+        $this->appIcon = $appIcon;
+    }
 }
