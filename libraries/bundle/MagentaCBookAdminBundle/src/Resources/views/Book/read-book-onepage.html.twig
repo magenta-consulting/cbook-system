@@ -18,7 +18,8 @@
 {% endblock %}
 
 {% block nav_title %}
-    <img height="40" src="{{ publicMediumUrl(logo.id,'small') }}"/>
+    <a href="{{ path('magenta_book_index',{orgSlug:orgSlug,accessCode:accessCode,employeeCode:employeeCode}) }}"><img
+                height="40" src="{{ publicMediumUrl(logo.id,'small') }}"/></a>
 {% endblock %}
 
 {% block body %}
@@ -77,14 +78,14 @@
 
                                     {% for i, subChapter in chapter.subChapters %}
 
-                                            <a data-toggle="collapse" href="#chapter-{{ subChapter.id }}" role="button"
-                                               aria-expanded="false" aria-controls="chapter-{{ subChapter.id }}">
-                                                <strong
-                                                        id="chapter-{{ subChapter.listNumber }}"
-                                                        class="chapter-name">{{ subChapter.listNumber }}
-                                                    . {{ subChapter.name }}
-                                                </strong>
-                                            </a>
+                                        <a data-toggle="collapse" href="#chapter-{{ subChapter.id }}" role="button"
+                                           aria-expanded="false" aria-controls="chapter-{{ subChapter.id }}">
+                                            <strong
+                                                    id="chapter-{{ subChapter.listNumber }}"
+                                                    class="chapter-name">{{ subChapter.listNumber }}
+                                                . {{ subChapter.name }}
+                                            </strong>
+                                        </a>
 
                                         {#<hr style="margin-top:1px;margin-bottom:5px; border-bottom: dashed; border-width: thin;"/>#}
                                         <div class="collapse" id="chapter-{{ subChapter.id }}">
