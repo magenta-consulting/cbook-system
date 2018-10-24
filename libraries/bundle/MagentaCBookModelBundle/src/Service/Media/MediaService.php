@@ -45,6 +45,9 @@ class MediaService extends MediaManager
         if (MediaProviderInterface::FORMAT_REFERENCE === $format) {
             $path = $provider->getReferenceImage($medium);
         } else {
+            if ($format !== 'admin') {
+                $format = $medium->getContext() . '_' . $format;
+            }
             $path = sprintf('%s/thumb_%s_%s.%s', $provider->generatePath($medium), $medium->getId(), $format, $this->getExtension($medium));
         }
 
