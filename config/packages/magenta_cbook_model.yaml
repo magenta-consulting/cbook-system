@@ -311,8 +311,11 @@ sonata_media:
             - sonata.media.provider.image
             formats:
                 small: { width: 192 , quality: 70}
+                small_square: { width: 192, height: 192, quality: 100}
                 upper_small: { width: 300 , quality: 70}
+                upper_small_square: { width: 256, height: 256 , quality: 100}
                 medium: { width: 600 , quality: 70}
+                medium_square: { width: 512, height: 512 , quality: 100}
             download:
                 strategy: sonata.media.security.public_strategy
                 mode: http
