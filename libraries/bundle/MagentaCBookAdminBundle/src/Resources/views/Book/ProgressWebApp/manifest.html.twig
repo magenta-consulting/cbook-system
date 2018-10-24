@@ -14,7 +14,7 @@
 		"type": "image/png",
 		"sizes": "512x512"
 	}],
-	"start_url": "/{{orgSlug}}/app",
+	"start_url": "{{ path('magenta_book_index',{orgSlug:'orgSlug',accessCode:accessCode,employeeCode:employeeCode}) }}",
 	"background_color": "#fff",
 	"display": "fullscreen",
 	"scope": "/{{orgSlug}}/",

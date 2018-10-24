@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class BookPWAController extends Controller
 {
-    public function manifestAction($orgSlug, Request $request)
+    public function manifestAction($orgSlug, $accessCode, $employeeCode, Request $request)
     {
         $orgRepo = $this->getDoctrine()->getRepository(Organisation::class);
 
@@ -22,7 +22,9 @@ class BookPWAController extends Controller
         }
         $response = $this->render('@MagentaCBookAdmin/Book/ProgressWebApp/manifest.html.twig', [
             'org' => $org,
-            'orgSlug' => $orgSlug
+            'orgSlug' => $orgSlug,
+            'accessCode' => $accessCode,
+            'employeeCode' => $employeeCode,
         ]);
         $response->headers->set('Content-Type', 'application/json');
         return $response;

@@ -1,6 +1,8 @@
 {% extends base_book_template %}
 
 {% block stylesheets_book %}
+    <link rel="manifest" href="{{ path('magenta_book_manifest',{orgSlug:orgSlug, accessCode:accessCode,employeeCode:employeeCode}) }}">
+
     <style>
         nav {
             height: 70px;
