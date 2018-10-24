@@ -20,10 +20,12 @@ class BookPWAController extends Controller
         if (empty($org)) {
             throw new NotFoundHttpException();
         }
-        return $this->render('@MagentaCBookAdmin/Book/ProgressWebApp/manifest.html.twig', [
+        $response = $this->render('@MagentaCBookAdmin/Book/ProgressWebApp/manifest.html.twig', [
             'org' => $org,
             'orgSlug' => $orgSlug
         ]);
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
     public function serviceWorkerAction($orgSlug, Request $request)
@@ -35,6 +37,8 @@ class BookPWAController extends Controller
         if (empty($org)) {
             throw new NotFoundHttpException();
         }
-        return $this->render('@MagentaCBookAdmin/Book/ProgressWebApp/service-worker-app.html.twig');
+        $response = $this->render('@MagentaCBookAdmin/Book/ProgressWebApp/service-worker-app.html.twig');
+        $response->headers->set('Content-Type', 'application/javascript');
+        return $response;
     }
 }
