@@ -90,7 +90,6 @@
                                     {{ chapterText |raw }}
 
                                     {% for i, subChapter in chapter.subChapters %}
-
                                         <div id="chapter-number-{{ subChapter.listNumber }}" class="chapter-title"
                                              data-toggle="collapse" data-target="#chapter-{{ subChapter.id }}"
                                              role="button"
@@ -102,8 +101,7 @@
                                                 {{ subChapter.name }}
                                             </div>
                                         </div>
-
-                                        {#<hr style="margin-top:1px;margin-bottom:5px; border-bottom: dashed; border-width: thin;"/>#}
+                                        <hr style="margin-top:1px;margin-bottom:5px;"/>
                                         <div class="collapse" id="chapter-{{ subChapter.id }}">
                                             <div class="card card-body">
                                                 {{ subChapter.text|raw }}
