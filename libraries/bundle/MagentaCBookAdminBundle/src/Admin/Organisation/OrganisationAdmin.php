@@ -181,6 +181,7 @@ class OrganisationAdmin extends BaseAdmin
 //		$adminUserAdmin->g
         $formMapper->with('Security')
             ->add('linkedToWellness')
+            ->add('enabled')
             ->add('adminUsers', ModelAutocompleteType::class, [
                 'required' => false,
                 'property' => 'username',
