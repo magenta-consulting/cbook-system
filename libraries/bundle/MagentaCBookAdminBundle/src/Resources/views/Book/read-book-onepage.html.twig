@@ -12,7 +12,7 @@
         }
 
         .card-body p {
-            margin-top: 10px;
+            margin-top: 0px;
         }
 
         .chapter-title {
@@ -82,7 +82,7 @@
                             </div>
                         </div>
                         <hr style="margin-top:1px;margin-bottom:5px; border-bottom: dashed; border-width: thin;"/>
-                        <div class="editable chapter-name" data-name="chapter-{{ chapter.id }}-text">
+                        <div class="editable" data-name="chapter-{{ chapter.id }}-text">
                             {% set chapterText = chapter.text|striptags %}
                             <div class="collapse" id="chapter-{{ chapter.id }}">
                                 <div class="card card-body">
