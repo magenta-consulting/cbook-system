@@ -114,7 +114,7 @@ class IndividualMemberAdmin extends BaseAdmin
     public function configureRoutes(RouteCollection $collection)
     {
         parent::configureRoutes($collection);
-//		$collection->add('show_user_profile', $this->getRouterIdParameter() . '/show-user-profile');
+		$collection->add('memberImport', 'member-import');
 
     }
 
@@ -192,7 +192,8 @@ class IndividualMemberAdmin extends BaseAdmin
         $formMapper
             ->with('form_group.user_details', ['class' => 'col-md-6']);
         $formMapper
-            ->add('person.name', null, ['label' => 'form.label_name'])
+            ->add('person.givenName', null, ['label' => 'form.label_given_name'])
+            ->add('person.familyName', null, ['label' => 'form.label_family_name'])
             ->add('person.telephone', null, ['label' => 'form.label_telephone'])
             ->add('person.idNumber', null, ['label' => 'form.label_id_number'])
             ->add('person.birthDate', DatePickerType::class, [
