@@ -73,7 +73,7 @@ class IndividualMemberAdminController extends BaseCRUDAdminController
                     $this->get('sonata.notification.backend')->createAndPublish('member-import', array(
                         'job-id' => $dp->getId()
                     ));
-                    $this->addFlash('sonata_flash_success', 'Member List was uploaded successfully! Start importing now...');
+                    $this->addFlash('sonata_flash_success', 'Member List was uploaded successfully! Start importing now... Please check back in a few minutes');
                 } else {
                     $this->addFlash('sonata_flash_error', implode(', ', $errors));
                 }
