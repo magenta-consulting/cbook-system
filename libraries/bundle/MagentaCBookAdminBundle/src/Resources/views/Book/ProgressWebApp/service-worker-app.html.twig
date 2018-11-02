@@ -38,7 +38,7 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function(event) {
 	console.log('The service worker is serving the asset.');
-	if (event.request.url.indexOf('book') == 13) {
+	if (event.request.url.indexOf('book',15) == 13) {
 		console.log('load from network beofre cache for index page');
 		event.respondWith(fromNetwork(event.request, 400).catch(function() {
 			return fromCache(event.request);
