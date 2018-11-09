@@ -401,7 +401,7 @@ monolog:
             type:       swift_mailer
             from_email: '%noreply_email%'
             to_email:   'binh@sunrise.vn'
-            subject:    'SWarranty - An Error Occurred! %%message%%'
+            subject:    'CBook - An Error Occurred! %%message%%'
             level:      debug
             formatter:  monolog.formatter.html
             content_type: text/html
