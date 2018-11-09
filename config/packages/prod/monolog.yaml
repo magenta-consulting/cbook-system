@@ -3,7 +3,7 @@ monolog:
         main:
             type: fingers_crossed
             action_level: error
-            handler: group
+            handler: grouped
             excluded_404s:
                 # regex: exclude all 404 errors from the logs
                 - ^/
