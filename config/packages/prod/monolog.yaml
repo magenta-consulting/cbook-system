@@ -3,10 +3,14 @@ monolog:
         main:
             type: fingers_crossed
             action_level: error
-            handler: grouped
+            handler: nested
             excluded_404s:
                 # regex: exclude all 404 errors from the logs
                 - ^/
+        nested:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            level: debug
         console:
             type: console
             process_psr_3_messages: false
@@ -19,22 +23,3 @@ monolog:
             handler: deprecation
             max_level: info
             channels: ["php"]
-
-        grouped:
-            type:    group
-            members: [streamed, deduplicated]
-        streamed:
-            type:  stream
-            path:  '%kernel.logs_dir%/%kernel.environment%.log'
-            level: debug
-        deduplicated:
-            type:    deduplication
-            handler: swift
-        swift:
-            type:       swift_mailer
-            from_email: '%noreply_email%'
-            to_email:   'binh@sunrise.vn'
-            subject:    'CBook - An Error Occurred! %%message%%'
-            level:      debug
-            formatter:  monolog.formatter.html
-            content_type: text/html
