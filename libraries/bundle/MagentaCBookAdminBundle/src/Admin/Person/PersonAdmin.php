@@ -51,7 +51,7 @@ class PersonAdmin extends BaseAdmin
         if ($this->isAdmin()) {
             return $query;
         } else {
-            $member = $this->getCurrentIndividualMember();
+
             /** @var QueryBuilder $qb */
             $qb = $query->getQueryBuilder();
             $expr = $qb->expr();
@@ -61,6 +61,7 @@ class PersonAdmin extends BaseAdmin
                 ->join('individual.organization', 'organization');
             $qb->andWhere($expr->eq('organization.id', $this->getCurrentOrganisation()->getId()));
         }
+        return $query;
     }
 
     protected function configureFormFields(FormMapper $form)
