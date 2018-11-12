@@ -5,6 +5,7 @@ namespace Magenta\Bundle\CBookAdminBundle\Controller;
 use Magenta\Bundle\CBookModelBundle\Entity\Organisation\Organisation;
 use Magenta\Bundle\CBookModelBundle\Entity\System\ProgressiveWebApp\Subscription;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -32,6 +33,7 @@ class BookPWAController extends Controller
         $sub->setIndividualMember($member);
         $manager->persist($sub);
         $manager->flush($sub);
+        return new JsonResponse('OK');
     }
 
     public function manifestAction($orgSlug, $accessCode, $employeeCode, Request $request)

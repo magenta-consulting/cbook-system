@@ -232,38 +232,27 @@
     }
 
     function updateSubscriptionOnServer(subscription) {
-        if (subscription) {
-// Assign handlers immediately after making the request,
-// and remember the jqxhr object for this request
-            let data = {
-                endpoint: subscription.endpoint,
-                'expiration-time': subscription.expirationTime,
-                p256dh: subscription.getKey('p256dh'),
-                auth: subscription.getKey('auth')
+        let url = '{{ path('magenta_book_pwa_push_notif_subscription',{orgSlug:orgSlug, accessCode:accessCode,employeeCode:employeeCode}) }}';
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(subscription)
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Bad status code from server.');
+                }
 
-            };
-            var jqxhr = $.post("{{ path('magenta_book_pwa_push_notif_subscription',{orgSlug:orgSlug, accessCode:accessCode,employeeCode:employeeCode}) }}", function (data) {
-                console.log('subscription successful ', data);
+                return response.json();
             })
-                .done(function () {
-                    console.log('subscription successfully completed');
-                })
-                .fail(function () {
-                    console.log('subscription FAILED ...');
-                })
-                .always(function () {
-                    console.log('subscription finished');
-                });
-
-// Perform other work here ...
-
-// Set another completion function for the request above
-            jqxhr.always(function () {
-                // alert("second finished");
+            .then(function (responseData) {
+                if (!(responseData.data && responseData.data.success)) {
+                    throw new Error('Bad response from server.');
+                }
             });
-        } else {
 
-        }
     }
 
 </script>
