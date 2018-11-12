@@ -12,6 +12,7 @@ use Magenta\Bundle\CBookModelBundle\Entity\System\DataProcessing\DPLog;
 use Magenta\Bundle\CBookModelBundle\Service\BaseService;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class IndividualMemberService extends BaseService
 {
@@ -19,6 +20,7 @@ class IndividualMemberService extends BaseService
     protected $spreadsheetService;
     protected $personService;
     protected $manager;
+    protected $members = [];
 
     public function __construct(ContainerInterface $container)
     {
@@ -27,6 +29,33 @@ class IndividualMemberService extends BaseService
         $this->registry = $container->get('doctrine');
         $this->spreadsheetService = $container->get('magenta_book.spreadsheet_service');
         $this->personService = $container->get('magenta_book.person_service');
+    }
+
+    public function checkAccess($accessCode, $employeeCode, $orgSlug = null)
+    {
+        $member = $this->getMemberByPinCodeEmployeeCode($accessCode, $employeeCode);
+        if (empty($member) || !$member->isEnabled() || !$member->getOrganization()->isEnabled()) {
+            throw new UnauthorizedHttpException('Cannot access book reader. Invalid access code');
+        }
+        if (!empty($orgSlug)) {
+            if ($member->getOrganization()->getSlug() !== $orgSlug) {
+                throw new UnauthorizedHttpException('Cannot access book reader. Invalid org code');
+            }
+        }
+    }
+
+    public function getMemberByPinCodeEmployeeCode($accessCode, $employeeCode): ?IndividualMember
+    {
+        $arrayKey = $accessCode . ':' . $employeeCode;
+        if (!is_array($this->members) || !array_key_exists($arrayKey, $this->members)) {
+            $registry = $this->getDoctrine();
+            $memberRepo = $registry->getRepository(IndividualMember::class);
+            if (!is_array($this->members)) {
+                $this->members = [];
+            }
+            $this->members[$arrayKey] = $memberRepo->findOneByPinCodeEmployeeCode($accessCode, $employeeCode);
+        }
+        return $this->members[$arrayKey];
     }
 
     public function importMembers(DPJob $dp)

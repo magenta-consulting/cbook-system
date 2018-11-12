@@ -13,8 +13,12 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class BookPWAController extends Controller
 {
-    public function savePushSubscription(Request $request)
+
+    public function savePushSubscriptionAction($orgSlug, $accessCode, $employeeCode, Request $request)
     {
+        $this->get('magenta_book.individual_service')->checkAccess($accessCode, $employeeCode, $orgSlug);
+        $member = $this->get('magenta_book.individual_service')->getMemberByPinCodeEmployeeCode($accessCode, $employeeCode);
+
         /**
          * {"endpoint":"https://fcm.googleapis.com/fcm/send/e1vbWsIR4ew:APA91bEyuhRU3gVr93sd-A5Kyls6RD4OhY4wxwfK-hPisTP_zSr21X33XiLHNcPOYPZDJE2tswNvksaCFDBALIdeyWp5WncOID5-QAcqUiHhoh25Xyi6phuvAjke1uJxc7Ys1S9fTsYc","expirationTime":null,"keys":{"p256dh":"BIT1e4n6h29d0NLBjLOrtBDJ69mOXGke3aq9rjRH3OG9cuihV2mvB_8_ATcaYt6pKcVjv8TR5kwfCzSNA1WeAOo","auth":"OOhi3n0xQ9LI-a5k7AsCDg"}}
          */
@@ -24,7 +28,10 @@ class BookPWAController extends Controller
         $authToken = $request->request->get('auth');
 
         $sub = Subscription::createInstance($endpoint, $expirationTime, $p256dhKey, $authToken);
-
+        $manager = $this->get('doctrine.orm.default_entity_manager');
+        $sub->setIndividualMember($member);
+        $manager->persist($sub);
+        $manager->flush($sub);
     }
 
     public function manifestAction($orgSlug, $accessCode, $employeeCode, Request $request)

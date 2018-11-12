@@ -5,6 +5,7 @@ namespace Magenta\Bundle\CBookModelBundle\Entity\System\ProgressiveWebApp;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Magenta\Bundle\CBookModelBundle\Entity\Organisation\IndividualMember;
 
 /**
  * @ORM\Entity()
@@ -37,6 +38,13 @@ class Subscription
         $instance->authToken = $authToken;
         return $instance;
     }
+
+    /**
+     * @var IndividualMember
+     * @ORM\ManyToOne(targetEntity="Magenta\Bundle\CBookModelBundle\Entity\Organisation\IndividualMember", inversedBy="subscriptions")
+     * @ORM\JoinColumn(name="id_individual_member", referencedColumnName="id")
+     */
+    protected $individualMember;
 
     /**
      * @var string|null
@@ -124,5 +132,21 @@ class Subscription
     public function setExpirationTime(?float $expirationTime): void
     {
         $this->expirationTime = $expirationTime;
+    }
+
+    /**
+     * @return IndividualMember
+     */
+    public function getIndividualMember(): IndividualMember
+    {
+        return $this->individualMember;
+    }
+
+    /**
+     * @param IndividualMember $individualMember
+     */
+    public function setIndividualMember(IndividualMember $individualMember): void
+    {
+        $this->individualMember = $individualMember;
     }
 }

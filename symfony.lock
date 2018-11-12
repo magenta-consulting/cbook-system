@@ -83,6 +83,9 @@
     "facebook/webdriver": {
         "version": "1.6.0"
     },
+    "fgrosse/phpasn1": {
+        "version": "2.1.0"
+    },
     "fig/link-util": {
         "version": "1.0.0"
     },
@@ -92,6 +95,9 @@
     "markbaker/complex": {
         "version": "1.4.7"
     },
+    "minishlink/web-push": {
+        "version": "v4.0.2"
+    },
     "monolog/monolog": {
         "version": "1.23.0"
     },
@@ -100,6 +106,9 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.1.1"
+    },
+    "paragonie/sodium_compat": {
+        "version": "v1.7.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
@@ -154,6 +163,9 @@
             "version": "1.0",
             "ref": "9b97b7756ccbe888d1be891b9dec6ec4c92ba0fe"
         }
+    },
+    "spomky-labs/base64url": {
+        "version": "v2.0.1"
     },
     "swiftmailer/swiftmailer": {
         "version": "v6.1.3"
@@ -415,6 +427,33 @@
     },
     "twig/twig": {
         "version": "v2.5.0"
+    },
+    "web-token/jwt-core": {
+        "version": "v1.2.3"
+    },
+    "web-token/jwt-key-mgmt": {
+        "version": "v1.2.3"
+    },
+    "web-token/jwt-signature": {
+        "version": "v1.2.3"
+    },
+    "web-token/jwt-signature-algorithm-ecdsa": {
+        "version": "v1.2.3"
+    },
+    "web-token/jwt-signature-algorithm-eddsa": {
+        "version": "v1.2.3"
+    },
+    "web-token/jwt-signature-algorithm-hmac": {
+        "version": "v1.2.3"
+    },
+    "web-token/jwt-signature-algorithm-none": {
+        "version": "v1.2.3"
+    },
+    "web-token/jwt-signature-algorithm-rsa": {
+        "version": "v1.2.3"
+    },
+    "web-token/jwt-util-ecc": {
+        "version": "v1.2.3"
     },
     "webmozart/assert": {
         "version": "1.3.0"
