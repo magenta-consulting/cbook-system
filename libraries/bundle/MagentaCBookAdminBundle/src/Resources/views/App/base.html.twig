@@ -233,12 +233,17 @@
 
     function updateSubscriptionOnServer(subscription) {
         if (subscription) {
-
-        } else {
 // Assign handlers immediately after making the request,
 // and remember the jqxhr object for this request
-            var jqxhr = $.post("{{ path('magenta_book_pwa_push_notif_subscription',{orgSlug:orgSlug, accessCode:accessCode,employeeCode:employeeCode}) }}", function () {
-                console.log('subscription successful');
+            let data = {
+                endpoint: subscription.endpoint,
+                'expiration-time': subscription.expirationTime,
+                p256dh: subscription.getKey('p256dh'),
+                auth: subscription.getKey('auth')
+
+            };
+            var jqxhr = $.post("{{ path('magenta_book_pwa_push_notif_subscription',{orgSlug:orgSlug, accessCode:accessCode,employeeCode:employeeCode}) }}", function (data) {
+                console.log('subscription successful ', data);
             })
                 .done(function () {
                     console.log('subscription successfully completed');
@@ -256,6 +261,8 @@
             jqxhr.always(function () {
                 // alert("second finished");
             });
+        } else {
+
         }
     }
 
