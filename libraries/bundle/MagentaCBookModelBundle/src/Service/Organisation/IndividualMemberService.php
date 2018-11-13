@@ -4,6 +4,7 @@ namespace Magenta\Bundle\CBookModelBundle\Service\Organisation;
 
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use JMS\Serializer\Tests\Fixtures\DoctrinePHPCR\BlogPost;
 use Magenta\Bundle\CBookModelBundle\Entity\Organisation\IndividualMember;
 use Magenta\Bundle\CBookModelBundle\Entity\Organisation\Organisation;
 use Magenta\Bundle\CBookModelBundle\Entity\Person\Person;
@@ -56,6 +57,129 @@ class IndividualMemberService extends BaseService
             $this->members[$arrayKey] = $memberRepo->findOneByPinCodeEmployeeCode($accessCode, $employeeCode);
         }
         return $this->members[$arrayKey];
+    }
+
+    public function notifyOneOrganisationIndividualMembers(DPJob $dp)
+    {
+        if ($dp->getType() !== DPJob::TYPE_PWA_PUSH_ORG_INDIVIDUAL || $dp->getStatus() !== DPJob::STATUS_PENDING) {
+            return;
+        }
+        try {
+            if (empty($dp->getOwnerId())) {
+                throw new \InvalidArgumentException('empty ownerId');
+            }
+
+            $memberRepo = $this->registry->getRepository(IndividualMember::class);
+            /** @var Organisation $org */
+            $org = $this->registry->getRepository(Organisation::class)->find($dp->getOwnerId());
+
+            if ($dp->getStatus() === DPJob::STATUS_PENDING || empty($dp->getResourceData())) {
+                $qb = $this->manager->createQueryBuilder()
+                    ->select('individual_member.id')
+                    ->from(IndividualMember::class, 'individual_member')
+                    ->join('individual_member.organization', 'organization');
+                $expr = $qb->expr();
+                $qb->where('organization.id', (int)$dp->getOwnerId());
+                $members = $qb->getQuery()->getArrayResult();
+                $dp->setResourceData(json_encode($members));
+                $dp->setStatus(DPJob::STATUS_LOCKED);
+                $this->manager->persist($dp);
+                $this->manager->flush();
+            }
+
+            $memberIds = json_decode($dp->getResourceData());
+            $row = 0;
+
+            if (!empty($dp->getIndex())) {
+                $row = $dp->getIndex();
+            }
+
+            $importedMembers = [];
+            for ($memberIndex = $row; $memberIndex < count($memberIds); $memberIndex++) {
+                $dp->setIndex($memberIndex);
+                $memberId = $memberIds[$memberIndex];
+                $member = $memberRepo->find($memberId);
+
+                $importedMembers[] = $member;
+                $row = $memberIndex;
+
+            }
+
+            $dp->setStatus(DPJob::STATUS_SUCCESSFUL);
+            $this->manager->persist($dp);
+            echo 'try flusing 111  ';
+
+
+            if (!$this->manager->isOpen()) {
+                throw new \Exception('EM is closed before flushed ' . $row);
+            } else {
+                echo $row . "rows are still ok before flushing .........  ";
+                /**
+                 * @var IndividualMember $member
+                 */
+                foreach ($importedMembers as $k => $member) {
+                    echo ' member ' . $k . ': ' . $member->getPerson()->getEmail();
+                }
+            }
+
+            $this->manager->flush();
+        } catch (OptimisticLockException $ope) {
+            $error = new DPLog();
+            $error->setName('OptimisticLockException: ' . $ope->getFile());
+            $error->setLevel(DPLog::LEVEL_ERROR);
+            $error->setIndex($row);
+            $error->setJob($dp);
+            $error->setCode($ope->getCode());
+            $error->setTrace($ope->getTrace());
+            $error->setMessage($ope->getMessage());
+//
+            if (!$this->manager->isOpen()) {
+                $this->manager = $this->manager->create(
+                    $this->manager->getConnection(),
+                    $this->manager->getConfiguration(),
+                    $this->manager->getEventManager()
+                );
+            }
+            $this->manager->persist($error);
+            $this->manager->flush();
+        } catch (ORMException $orme) {
+            $error = new DPLog();
+            $error->setName('ORMException: ' . $orme->getFile());
+            $error->setLevel(DPLog::LEVEL_ERROR);
+            $error->setIndex($row);
+            $error->setJob($dp);
+            $error->setCode($orme->getCode());
+            $error->setTrace($orme->getTrace());
+            $error->setMessage($orme->getMessage());
+            if (!$this->manager->isOpen()) {
+                $this->manager = $this->manager->create(
+                    $this->manager->getConnection(),
+                    $this->manager->getConfiguration(),
+                    $this->manager->getEventManager()
+                );
+            }
+            $this->manager->persist($error);
+            $this->manager->flush();
+        } catch (\Exception $e) {
+            $error = new DPLog();
+            $error->setName('ORMException: ' . $e->getFile());
+            $error->setLevel(DPLog::LEVEL_ERROR);
+            $error->setIndex($row);
+            $error->setJob($dp);
+            $error->setCode($e->getCode());
+            $error->setTrace($e->getTrace());
+            $error->setMessage($e->getMessage());
+            if (!$this->manager->isOpen()) {
+                $this->manager = $this->manager->create(
+                    $this->manager->getConnection(),
+                    $this->manager->getConfiguration(),
+                    $this->manager->getEventManager()
+                );
+            }
+            $this->manager->persist($error);
+            $this->manager->flush();
+            throw $e;
+        }
     }
 
     public function importMembers(DPJob $dp)

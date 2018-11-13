@@ -29,13 +29,14 @@ class Subscription
         return $this->id;
     }
 
-    public static function createInstance($endpoint = null, $expirationTime = null, $p256dhKey = null, $authToken = null)
+    public static function createInstance($endpoint = null, $expirationTime = null, $p256dhKey = null, $authToken = null, $contentEncoding = 'aesgcm')
     {
         $instance = new Subscription();
         $instance->endpoint = $endpoint;
         $instance->expirationTime = $expirationTime;
         $instance->p256dhKey = $p256dhKey;
         $instance->authToken = $authToken;
+        $instance->contentEncoding = $contentEncoding;
         return $instance;
     }
 
@@ -63,6 +64,12 @@ class Subscription
      * @ORM\Column(type="string", nullable=true, name="endpoint")
      */
     protected $endpoint;
+
+    /**
+     * @var string|null
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $contentEncoding;
 
     /**
      * @var double|null
@@ -148,5 +155,21 @@ class Subscription
     public function setIndividualMember(IndividualMember $individualMember): void
     {
         $this->individualMember = $individualMember;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getContentEncoding(): ?string
+    {
+        return $this->contentEncoding;
+    }
+
+    /**
+     * @param null|string $contentEncoding
+     */
+    public function setContentEncoding(?string $contentEncoding): void
+    {
+        $this->contentEncoding = $contentEncoding;
     }
 }

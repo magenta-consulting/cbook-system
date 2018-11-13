@@ -238,18 +238,20 @@
         const token = subscription.getKey('auth');
         const contentEncoding = (PushManager.supportedContentEncodings || ['aesgcm'])[0];
 
+        let data = {
+            endpoint: subscription.endpoint,
+            p256dh: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
+            auth: token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null,
+        };
+        data['expiration-time'] = subscription.expirationTime;
+        data['content-encoding'] = contentEncoding;
+
         return fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                endpoint: subscription.endpoint,
-                expiration: subscription.expirationTime,
-                p256dh: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
-                auth: token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null,
-                contentEncoding,
-            }),
+            body: JSON.stringify(data),
         })
             .then(function (response) {
                 if (!response.ok) {

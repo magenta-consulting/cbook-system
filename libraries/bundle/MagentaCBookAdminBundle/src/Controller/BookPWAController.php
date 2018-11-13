@@ -29,17 +29,19 @@ class BookPWAController extends Controller
         if (!empty($content)) {
             $params = json_decode($content, true); // 2nd param to get as array
             $endpoint = $params['endpoint'];
-            $expirationTime = $params['expiration'];
+            $expirationTime = $params['expiration-time'];
             $p256dhKey = $params['p256dh'];
             $authToken = $params['auth'];
+            $contentEncoding = $params['content-encoding'];
         } else {
             $endpoint = $request->request->get('endpoint');
-            $expirationTime = $request->request->get('expiration');
+            $expirationTime = $request->request->get('expiration-time');
             $p256dhKey = $request->request->get('p256dh');
             $authToken = $request->request->get('auth');
+            $contentEncoding = $params['content-encoding'];
         }
 
-        $sub = Subscription::createInstance($endpoint, $expirationTime, $p256dhKey, $authToken);
+        $sub = Subscription::createInstance($endpoint, $expirationTime, $p256dhKey, $authToken, $contentEncoding);
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $sub->setIndividualMember($member);
         $manager->persist($sub);
