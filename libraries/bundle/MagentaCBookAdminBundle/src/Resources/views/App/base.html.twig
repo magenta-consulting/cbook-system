@@ -191,6 +191,9 @@
                             }
 
                         });
+
+                    let notifOptions = {};
+                    swRegistration.showNotification('You have an update', notifOptions);
                 }
             }, function (err) {
                 // registration failed :(
