@@ -163,7 +163,7 @@
     {# PWA #}
     let isSubscribed = false;
     let swRegistration = null;
-    const applicationServerPublicKey = '{{ pwaPublicKey()|e('js') }}';
+    const applicationServerPublicKey = '{{- pwaPublicKey()|raw -}}';
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
