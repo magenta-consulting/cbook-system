@@ -27,7 +27,7 @@ var urlsToCache = [
 
 self.addEventListener('install', function(event) {
 	for(let i = 0; i < urlsToCache.length; i++) {
-		urlsToCache[i] = 'https://' + {{ pwa_hostname }} + urlsToCache[i];
+		urlsToCache[i] = 'https://' + '{{ pwa_hostname }}' + urlsToCache[i];
 	}
 	// Perform install steps
 	event.waitUntil(
