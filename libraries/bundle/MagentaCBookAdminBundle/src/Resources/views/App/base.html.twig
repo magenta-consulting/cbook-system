@@ -178,6 +178,7 @@
                         .then(function (subscription) {
                             isSubscribed = !(subscription === null);
 
+                            // what if a new user logged in to a machine that already subscribed
                             // updateSubscriptionOnServer(subscription);
 
                             if (isSubscribed) {
@@ -186,7 +187,7 @@
                                 console.log('User is NOT subscribed.');
                                 console.log('Subscribe Now !!!');
 
-                                // subscribeUser();
+                                subscribeUser();
                             }
 
                         });
