@@ -48,7 +48,7 @@ class MagentaTwigExtension extends AbstractExtension
     public function getPwaPublicKey()
     {
         $path = $this->container->getParameter('PWA_PUBLIC_KEY_PATH');
-        return file_get_contents($path);
+        return trim(file_get_contents($path));
     }
 
     public function paginationItemGroup(Chapter $chapter, Chapter $current)
