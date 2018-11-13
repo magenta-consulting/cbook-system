@@ -46,7 +46,7 @@ self.addEventListener('fetch', function(event) {
 	if(bookPos == -1){
 		if(urlsToCache.indexOf(event.request.url) != -1){
 
-			event.respondWith(fromCache(event.request, 400).catch(function() {
+			event.respondWith(fromCache(event.request, 400).catch(function(err) {
 			return fromNetwork(event.request);
 			}));
 
@@ -57,11 +57,11 @@ self.addEventListener('fetch', function(event) {
 
 	if (bookPos == -1 || event.request.method != 'GET') {
 		console.log('load from network before cache for index page');
-		event.respondWith(fromNetwork(event.request, 400).catch(function() {
+		event.respondWith(fromNetwork(event.request, 400).catch(function(err) {
 			return fromCache(event.request);
 		}));
 	} else {
-		event.respondWith(fromCache(event.request, 400).catch(function() {
+		event.respondWith(fromCache(event.request, 400).catch(function(err) {
 			return fromNetwork(event.request);
 		}));
 	}
