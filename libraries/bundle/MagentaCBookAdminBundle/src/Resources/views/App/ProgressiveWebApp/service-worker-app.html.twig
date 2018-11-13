@@ -86,7 +86,7 @@ function fromNetwork(request, timeout) {
 			// as well as the cache consuming the response, we need
 			// to clone it so we have two streams.
 			var responseToCache = response.clone();
-			if(event.request.method === 'GET'){
+			if(request.method === 'GET'){
 				caches.open(CACHE_NAME)
 					.then(function(cache) {
 
