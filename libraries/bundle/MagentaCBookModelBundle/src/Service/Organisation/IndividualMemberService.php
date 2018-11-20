@@ -77,7 +77,7 @@ class IndividualMemberService extends BaseService
             
             $memberRepo = $this->registry->getRepository(IndividualMember::class);
             /** @var Message $message */
-            $message = $this->registry->getRepository(Message::class)->find((int)$dp->getOwnerId());
+            $message = $this->registry->getRepository(Message::class)->find((int)$dp->getResourceName());
             
             if ($dp->getStatus() === DPJob::STATUS_PENDING) {
                 
