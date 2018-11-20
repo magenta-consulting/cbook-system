@@ -167,7 +167,7 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('{{ path('magenta_book_service_worker',{'orgSlug':orgSlug,accessCode:accessCode,employeeCode:employeeCode}) }}').then(function (registration) {
+      navigator.serviceWorker.register('{{ path('magenta_book_service_worker',{'orgSlug':orgSlug,accessCode:accessCode,employeeCode:employeeCode})|raw }}').then(function (registration) {
         // Registration was successful
         console.log('ServiceWorker registration successful with scope: ', registration.scope);
         if ('PushManager' in window) {
