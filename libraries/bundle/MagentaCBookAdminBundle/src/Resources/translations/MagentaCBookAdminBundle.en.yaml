@@ -2,6 +2,16 @@ person: System Users
 individualgroup: Groups
 individualmember: Members
 profile_edit: Profile
+message: Alerts & Notices
+btn_publish: Publish
+
+btn_draft_update_and_edit_again: Update draft
+btn_draft_create_and_edit_again: Save draft
+btn_draft_create_and_create_a_new_one: Save draft and add another
+btn_draft_create_and_return_to_list: Save draft and close
+btn_draft_update_and_return_to_list: Update draft and close
+delete_or: Or
+link_delete: Delete
 
 breadcrumb:
     link_person_list: Users
@@ -112,6 +122,8 @@ form_group:
     groups: Groups
 
 form:
+    label_title: Title
+    label_body: Body
     label_updated_at: Updated at
     group_name: 'Group name'
     username: Username
