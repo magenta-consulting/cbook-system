@@ -136,7 +136,8 @@ class IndividualMemberService extends BaseService
                         
                         $webPush->sendNotification(
                             $preparedSub,
-                            json_encode(['sender-name' => $message->getSender()->getName(),
+                            json_encode([
+                                'sender-name' => $message->getSender()->getPerson()->getName(),
                                 'message-id' => $message->getId(),
                                 'message-name' => $message->getName(),
                                 'subscription-id' => $_sub->getId()]),
