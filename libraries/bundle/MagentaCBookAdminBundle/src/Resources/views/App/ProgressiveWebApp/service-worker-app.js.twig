@@ -41,12 +41,12 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener('notificationclick', function (event) {
   const notification = event.notification;
-  let url = '{{- path('magenta_book_index',
+  let url = 'https://' + '{{ pwa_hostname }}'+'{{- path('magenta_book_index',
     {
       orgSlug : orgSlug,
       accessCode: accessCode,
       employeeCode: employeeCode
-    }) ~ '/notif/'|e('js') -}}';
+    })|e('js') ~ '/notif/' -}}';
   let payload = notification.data;
   let messageId = payload.messageId;
   let subscriptionId = payload.subscriptionId;
@@ -59,7 +59,6 @@ self.addEventListener('push', function (event) {
   if (event.data) {
     console.log('This push event has data: ', event.data.text());
     let payload = event.data.json();
-    payload.get
     let messageId = payload['message-id'];
     let subscriptionId = payload['subscription-id'];
     let senderName = payload['sender-name'];
