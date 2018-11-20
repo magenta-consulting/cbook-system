@@ -70,6 +70,7 @@ class MessageListener
                     $c->setName('Public Conversation');
                     
                     $conversation = $c;
+                    $manager->persist($conversation);
                 }
                 $message->setConversation($conversation);
             }
