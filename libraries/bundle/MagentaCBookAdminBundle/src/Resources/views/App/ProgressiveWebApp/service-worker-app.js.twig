@@ -41,12 +41,12 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener('notificationclick', function (event) {
   const notification = event.notification;
-  let url = '{{ path('magenta_book_index',
+  let url = '{{- path('magenta_book_index',
     {
       orgSlug : orgSlug,
       accessCode: accessCode,
       employeeCode: employeeCode
-    }) ~ '/notif/' }}';
+    }) ~ '/notif/'|e('js') -}}';
   let payload = notification.data;
   let messageId = payload.messageId;
   let subscriptionId = payload.subscriptionId;
