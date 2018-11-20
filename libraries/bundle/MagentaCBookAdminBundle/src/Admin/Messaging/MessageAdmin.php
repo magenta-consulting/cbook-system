@@ -114,23 +114,24 @@ class MessageAdmin extends BaseAdmin
      */
     protected function configureListFields(ListMapper $listMapper)
     {
-        $listMapper->add('_action', 'actions', [
-                'actions' => array(
-//					'impersonate' => array( 'template' => 'admin/Message/list__action__impersonate.html.twig' ),
-//                    'cbook' => array('template' => '@MagentaCBookAdmin/Admin/Organisation/Action/list__action__cbooks.html.twig'),
-                    'edit' => array(),
-                    'delete' => array(),
-
-//                ,
-//                    'view_description' => array('template' => '::admin/product/description.html.twig')
-//                ,
-//                    'view_tos' => array('template' => '::admin/product/tos.html.twig')
-                )
-            ]
-        );
+//        $listMapper->add('_action', 'actions', [
+//                'actions' => array(
+////					'impersonate' => array( 'template' => 'admin/Message/list__action__impersonate.html.twig' ),
+////                    'cbook' => array('template' => '@MagentaCBookAdmin/Admin/Organisation/Action/list__action__cbooks.html.twig'),
+//                    'edit' => array(),
+//                    'delete' => array(),
+//
+////                ,
+////                    'view_description' => array('template' => '::admin/product/description.html.twig')
+////                ,
+////                    'view_tos' => array('template' => '::admin/product/tos.html.twig')
+//                )
+//            ]
+//        );
+        
         $listMapper
-            ->addIdentifier('name')
-            ->add('createdAt');
+            ->addIdentifier('name', null, ['label' => 'form.label_name'])
+            ->add('createdAt',null, ['label' => 'form.label_created_at']);
         
         if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
 //            $listMapper
