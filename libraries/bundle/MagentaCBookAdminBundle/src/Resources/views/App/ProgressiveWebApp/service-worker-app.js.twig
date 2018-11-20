@@ -46,7 +46,7 @@ self.addEventListener('notificationclick', function (event) {
       orgSlug : orgSlug,
       accessCode: accessCode,
       employeeCode: employeeCode
-    })|raw ~ '/notif/'|raw -}}';
+    })|raw ~ 'notif/'|raw -}}';
   let payload = notification.data;
   let messageId = payload.messageId;
   let subscriptionId = payload.subscriptionId;

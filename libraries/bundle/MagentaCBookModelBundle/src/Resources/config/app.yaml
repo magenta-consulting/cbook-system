@@ -9,7 +9,7 @@ services:
     magenta_user.command.send_message:
         class: Magenta\Bundle\CBookModelBundle\Command\Messaging\SendMessageCommand
         public: false
-        arguments: ['@doctrine.orm.default_entity_manager']
+        arguments: ['@doctrine.orm.default_entity_manager','@doctrine','@magenta_book.individual_service']
         tags:
         - {name: "console.command", command: "magenta:messaging:send-messages"}
 
