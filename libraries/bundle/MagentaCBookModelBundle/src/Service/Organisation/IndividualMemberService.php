@@ -122,7 +122,7 @@ class IndividualMemberService extends BaseService
                     /**
                      * @var Subscription $_sub
                      */
-                    foreach (subscriptions as $_sub) {
+                    foreach ($subscriptions as $_sub) {
                         $preparedSub = Subscription::create(
                             [
                                 'endpoint' => $_sub->getEndpoint(),
