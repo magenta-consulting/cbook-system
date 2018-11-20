@@ -32,12 +32,10 @@ class SendMessageCommand extends Command
     private $manager;
     private $registry;
     private $memberService;
-    private $container;
     
-    public function __construct(ContainerInterface $container, EntityManager $manager, RegistryInterface $registry, IndividualMemberService $memberService)
+    public function __construct(EntityManager $manager, RegistryInterface $registry, IndividualMemberService $memberService)
     {
         parent::__construct();
-        $this->container = $container;
         $this->manager = $manager;
         $this->registry = $registry;
         $this->memberService = $memberService;
@@ -69,14 +67,8 @@ EOT
         $dpjobId = $input->getArgument('dpjob');
         
         $output->writeln('Sending messages from ' . $dpjobId);
-        $path = $this->container->getParameter('PWA_PUBLIC_KEY_PATH');
-        $pwaPublicKey = trim(file_get_contents($path));
-        $path = $this->container->getParameter('PWA_PRIVATE_KEY_PATH');
-        $pwaPrivateKey = trim(file_get_contents($path));
-        $output->writeln($pwaPublicKey);
-        $output->writeln($pwaPrivateKey);
         $dp = $this->registry->getRepository(DPJob::class)->find($dpjobId);
-        
+    
         $this->memberService->notifyOneOrganisationIndividualMembers($dp);
         
         $output->writeln('Flusing');
