@@ -40,17 +40,16 @@ self.addEventListener('install', function (event) {
 });
 
 self.addEventListener('notificationclick', function (event) {
-  const dismissedNotification = event.notification;
+  const notification = event.notification;
   let url = '{{ path('magenta_book_index',
     {
       orgSlug : orgSlug,
       accessCode: accessCode,
       employeeCode: employeeCode
     }) ~ '/notif/' }}';
-
-  let messagePlaceholder = 'Message #';
-  event.notification.title.substr(messagePlaceholder.length);
-  let subscriptionId = localStorage.getItem('subscriptionId');
+  let payload = notification.data;
+  let messageId = payload.messageId;
+  let subscriptionId = payload.subscriptionId;
   url += messageId + '/subscription/' + subscriptionId;
   const promiseChain = clients.openWindow(url);
   event.waitUntil(promiseChain);
@@ -64,13 +63,15 @@ self.addEventListener('push', function (event) {
     let subscriptionId = payload['subscription-id'];
     let senderName = payload['sender-name'];
     let messageName = payload['message-name'];
-    let _subId = localStorage.getItem('subscriptionId')
-    if (_subId == null || typeof _subId == "undefined") {
-      _subId = subscriptionId;
-      localStorage.setItem('subscriptionId', _subId);
-    }
-    let notifOptions = {body: 'Message from ' + senderName + ': ' + messageName};
-    const promiseChain = self.registration.showNotification('Message #' + messageId, notifOptions);
+
+    let notifOptions = {
+      body: messageName,
+      data: {
+        messageId: messageId,
+        subscriptionId: subscriptionId
+      }
+    };
+    const promiseChain = self.registration.showNotification('Message from' + senderName, notifOptions);
     event.waitUntil(promiseChain);
   } else {
     console.log('This push event has no data.');
