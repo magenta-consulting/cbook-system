@@ -41,12 +41,7 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener('notificationclick', function (event) {
   const notification = event.notification;
-  let url = 'https://' + '{{ pwa_hostname|raw }}'+'{{- path('magenta_book_index',
-    {
-      orgSlug : orgSlug,
-      accessCode: accessCode,
-      employeeCode: employeeCode
-    })|raw ~ 'notif/'|raw -}}';
+  let url = 'https://' + '{{ pwa_hostname|raw }}' + '/{{ accessCode }}/{{ employeeCode }}' + '/notif/';
   let payload = notification.data;
   let messageId = payload.messageId;
   let subscriptionId = payload.subscriptionId;
