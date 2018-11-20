@@ -47,9 +47,10 @@ self.addEventListener('notificationclick', function (event) {
       accessCode: accessCode,
       employeeCode: employeeCode
     }) ~ '/notif/' }}';
-  let payload = event.data.json;
-  let messageId = payload['message-id'];
-  let subscriptionId = payload['subscription-id'];
+
+  let messagePlaceholder = 'Message #';
+  event.notification.title.substr(messagePlaceholder.length);
+  let subscriptionId = localStorage.getItem('subscriptionId');
   url += messageId + '/subscription/' + subscriptionId;
   const promiseChain = clients.openWindow(url);
   event.waitUntil(promiseChain);
@@ -58,8 +59,18 @@ self.addEventListener('notificationclick', function (event) {
 self.addEventListener('push', function (event) {
   if (event.data) {
     console.log('This push event has data: ', event.data.text());
-    let notifOptions = {};
-    const promiseChain = self.registration.showNotification('You have a message', notifOptions);
+    let payload = event.data.json;
+    let messageId = payload['message-id'];
+    let subscriptionId = payload['subscription-id'];
+    let senderName = payload['sender-name'];
+    let messageName = payload['message-name'];
+    let _subId = localStorage.getItem('subscriptionId')
+    if (_subId == null || typeof _subId == "undefined") {
+      _subId = subscriptionId;
+      localStorage.setItem('subscriptionId', _subId);
+    }
+    let notifOptions = {body: 'Message from ' + senderName + ': ' + messageName};
+    const promiseChain = self.registration.showNotification('Message #' + messageId, notifOptions);
     event.waitUntil(promiseChain);
   } else {
     console.log('This push event has no data.');
