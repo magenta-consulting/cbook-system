@@ -123,7 +123,7 @@ class IndividualMemberService extends BaseService
                      * @var Subscription $_sub
                      */
                     foreach ($subscriptions as $_sub) {
-                        $preparedSub = Subscription::create(
+                        $preparedSub = \Minishlink\WebPush\Subscription::create(
                             [
                                 'endpoint' => $_sub->getEndpoint(),
                                 'publicKey' => $_sub->getP256dhKey(),
