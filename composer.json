@@ -89,6 +89,7 @@
                 "libraries\\component\\IndividualMemberGroup\\src/",
                 "libraries\\component\\Organization\\src/"
             ],
+            "Bean\\Component\\Messaging\\": "libraries\\component\\Messaging\\src/",
             "Bean\\Component\\Media\\": "libraries\\component\\Media\\src/",
             "Bean\\Component\\Page\\": "libraries\\component\\Page\\src/",
             "Bean\\Component\\Person\\": "libraries\\component\\Person\\src/",
