@@ -72,7 +72,7 @@ self.addEventListener('push', function (event) {
         subscriptionId: subscriptionId
       }
     };
-    const promiseChain = self.registration.showNotification('Message from' + senderName, notifOptions);
+    const promiseChain = self.registration.showNotification('Message from ' + senderName, notifOptions);
     event.waitUntil(promiseChain);
   } else {
     console.log('This push event has no data.');
