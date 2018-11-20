@@ -28,7 +28,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageAdmin extends BaseAdmin
 {
-    const TEMPLATES = ['edit' => '@MagentaCBookAdmin/Admin/Messaging/Message/CRUD/edit.html.twig'];
+    const TEMPLATES = [
+        'edit' => '@MagentaCBookAdmin/Admin/Messaging/Message/CRUD/edit.html.twig',
+        'show' => '@MagentaCBookAdmin/Admin/Messaging/Message/CRUD/show.html.twig'
+    ];
     
     protected $action;
     
@@ -60,9 +63,13 @@ class MessageAdmin extends BaseAdmin
 //        $pos = $container->get(MessageService::class)->getPosition();
         if (in_array($name, ['EDIT', 'DELETE'])) {
             if (empty($object)) {
-                return $isAdmin;
+                return $name !== 'DELETE';
             } else {
                 return $object->getStatus() === Message::STATUS_DRAFT;
+            }
+        } else {
+            if ($name === 'VIEW') {
+                return true;
             }
         }
 //        if (empty($isAdmin)) {
@@ -99,14 +106,12 @@ class MessageAdmin extends BaseAdmin
     
     }
     
-    public function getTemplate($name)
-    {
-        return parent::getTemplate($name);
-    }
-    
     protected function configureShowFields(ShowMapper $showMapper)
     {
-    
+        $showMapper
+            ->add('name', null, ['label' => 'form.label_name'])
+            ->add('text', null, ['label' => 'form.label_body']);
+        
     }
     
     /**
@@ -114,24 +119,25 @@ class MessageAdmin extends BaseAdmin
      */
     protected function configureListFields(ListMapper $listMapper)
     {
-//        $listMapper->add('_action', 'actions', [
-//                'actions' => array(
-////					'impersonate' => array( 'template' => 'admin/Message/list__action__impersonate.html.twig' ),
-////                    'cbook' => array('template' => '@MagentaCBookAdmin/Admin/Organisation/Action/list__action__cbooks.html.twig'),
-//                    'edit' => array(),
-//                    'delete' => array(),
-//
-////                ,
-////                    'view_description' => array('template' => '::admin/product/description.html.twig')
-////                ,
-////                    'view_tos' => array('template' => '::admin/product/tos.html.twig')
-//                )
-//            ]
-//        );
+        $listMapper->add('_action', 'actions', [
+                'actions' => array(
+//					'impersonate' => array( 'template' => 'admin/Message/list__action__impersonate.html.twig' ),
+//                    'cbook' => array('template' => '@MagentaCBookAdmin/Admin/Organisation/Action/list__action__cbooks.html.twig'),
+                    'show' => array(),
+                    'edit' => array(),
+                    'delete' => array(),
+
+//                ,
+//                    'view_description' => array('template' => '::admin/product/description.html.twig')
+//                ,
+//                    'view_tos' => array('template' => '::admin/product/tos.html.twig')
+                )
+            ]
+        );
         
         $listMapper
             ->addIdentifier('name', null, ['label' => 'form.label_name'])
-            ->add('createdAt',null, ['label' => 'form.label_created_at']);
+            ->add('createdAt', null, ['label' => 'form.label_created_at']);
         
         if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
 //            $listMapper
@@ -158,8 +164,12 @@ class MessageAdmin extends BaseAdmin
     {
         parent::preValidate($object);
         $request = $this->getRequest();
+        $p = $this->getLoggedInUser()->getPerson();
+        $m = $p->initiateIndividualMember($this->getCurrentOrganisation());
+        $manager = $this->getConfigurationPool()->getContainer()->get('doctrine.orm.default_entity_manager');
+        $manager->persist($m);
         if (null !== $request->get('btn_publish')) {
-            $object->deliver();
+            $m->deliver($object);
         }
     }
     
