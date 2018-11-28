@@ -32,9 +32,9 @@
         });
 
         let $msLog = $('.member-selection-log')
-        let flushUrl = '{{ admin.generateUrl('updateMemberSelection',{id: 0, action: 'action'}) }}';
+        let flushUrlTemplate = '{{ admin.generateUrl('updateMemberSelection',{id: 0, action: 'action'}) }}';
         let flushMemberSelection = function (member, action) {
-          flushUrl = flushUrl.replace('member/0/member-selection/action', 'member/' + member.id + '/member-selection/' + action);
+          let flushUrl = flushUrlTemplate.replace('member/0/member-selection/action', 'member/' + member.id + '/member-selection/' + action);
 
 // Assign handlers immediately after making the request,
 // and remember the jqxhr object for this request
