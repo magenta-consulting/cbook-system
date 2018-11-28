@@ -18,7 +18,7 @@
         $('.member-list').select2('destroy');
         $memberSelect = $('#members-select');
         $memberSelect.change(function (e) {
-          console.log(e);
+          updateMemberSelection();
         })
 
         window.members = [];
@@ -119,13 +119,13 @@
           selectedListLabel: 'Members of this Group',
         });
 
-        $('[name="duallistbox_members[]_helper1"]').change(function (e) {
-          updateMemberSelection();
-        })
-
-        $('[name="duallistbox_members[]_helper2"]').change(function (e) {
-          updateMemberSelection();
-        })
+        // $('[name="duallistbox_members[]_helper1"]').change(function (e) {
+        //   updateMemberSelection();
+        // })
+        //
+        // $('[name="duallistbox_members[]_helper2"]').change(function (e) {
+        //   updateMemberSelection();
+        // })
 
 
       });
