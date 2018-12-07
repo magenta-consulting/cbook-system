@@ -180,6 +180,7 @@
                 console.log('after save', e, editor, data);
                 $saveStatus.removeAttr('class');
                 $saveStatus.attr('class', 'label label-success');
+                // escaping
                 $saveStatus.html('Saved ' + $(e.currentTarget).data('field') + ' of "<i>' + '{{ mainContentItem.name|e('js')|e }}' + '</i>"'); // $(e.currentTarget).data('type')
             });
             $editable.on('froalaEditor.save.error', function (e, editor, error, response) {
