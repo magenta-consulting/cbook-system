@@ -181,13 +181,13 @@
                 $saveStatus.removeAttr('class');
                 $saveStatus.attr('class', 'label label-success');
                 // escaping
-                $saveStatus.html('Saved ' + $(e.currentTarget).data('field') + ' of "<i>' + '{{ mainContentItem.name|e('js')|e }}' + '</i>"'); // $(e.currentTarget).data('type')
+                $saveStatus.html('Saved ' + $(e.currentTarget).data('field') + ' of "<i>' + '{{ mainContentItem.name|e }}' + '</i>"'); // $(e.currentTarget).data('type')
             });
             $editable.on('froalaEditor.save.error', function (e, editor, error, response) {
                 console.log('error on save', e, editor, error, response);
                 $saveStatus.removeAttr('class');
                 $saveStatus.attr('class', 'label label-danger');
-                $saveStatus.html('Error, Couldn\'t save ' + $(e.currentTarget).data('field') + ' of "<i>' + '{{ mainContentItem.name|e('js')|e }}' + '</i>"!!!'); //  $(e.currentTarget).data('type')
+                $saveStatus.html('Error, Couldn\'t save ' + $(e.currentTarget).data('field') + ' of "<i>' + '{{ mainContentItem.name|e }}' + '</i>"!!!'); //  $(e.currentTarget).data('type')
             });
             $('#btn-undo').click(() => {
                 $editable.froalaEditor('commands.undo');
