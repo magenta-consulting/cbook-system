@@ -27,7 +27,6 @@
         "sonata-project/notification-orm-pack": "^1.0",
         "symfony/asset": "*",
         "symfony/console": "*",
-        "symfony/dotenv": "*",
         "symfony/expression-language": "*",
         "symfony/flex": "^1.1",
         "symfony/form": "*",
@@ -47,6 +46,7 @@
     },
     "require-dev": {
         "beancomponent/devtool-bundle": "^0.1.2",
+        "symfony/dotenv": "*",
         "symfony/debug-pack": "*",
         "symfony/maker-bundle": "^1.0",
         "symfony/profiler-pack": "*",
