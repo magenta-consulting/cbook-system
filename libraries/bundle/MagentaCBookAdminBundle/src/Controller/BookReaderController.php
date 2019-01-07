@@ -5,13 +5,11 @@ namespace Magenta\Bundle\CBookAdminBundle\Controller;
 use Magenta\Bundle\CBookModelBundle\Entity\Book\Book;
 use Magenta\Bundle\CBookModelBundle\Entity\Book\Chapter;
 use Magenta\Bundle\CBookModelBundle\Entity\Classification\Category;
-use Magenta\Bundle\CBookModelBundle\Entity\Classification\CategoryItem;
 use Magenta\Bundle\CBookModelBundle\Entity\Classification\Context;
 use Magenta\Bundle\CBookModelBundle\Entity\Messaging\Message;
 use Magenta\Bundle\CBookModelBundle\Entity\Organisation\IndividualMember;
 use Magenta\Bundle\CBookModelBundle\Entity\Organisation\Organisation;
 use Magenta\Bundle\CBookModelBundle\Entity\System\ProgressiveWebApp\Subscription;
-use Magenta\Bundle\CBookModelBundle\Service\Organisation\IndividualMemberService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,34 +26,72 @@ class BookReaderController extends Controller
     public function loginAction($orgSlug, Request $request)
     {
         if ($request->isMethod('post')) {
+            $type = $request->request->get('type', 'nric');
             $dobStr = $request->request->get('dob');
             $idNumber = $request->request->get('id-number');
             $orgCode = $request->request->get('organisation-code');
-            if (empty($dobStr) || empty($idNumber) || empty($orgCode)) {
-//                throw new UnauthorizedHttpException('Fields are required');
-                $this->addFlash('error', 'Missing required Fields');
-            } else {
-                $dob = \DateTime::createFromFormat('Y-m-d', $dobStr);
-                if (empty($dob)) {
-                    $this->addFlash('error', 'Date of Birth is invalid');
+            $username = $request->request->get('username');
+            $password = $request->request->get('password');
+            $memberRepo = $this->getDoctrine()->getRepository(IndividualMember::class);
+            
+            if ('username' === $type) {
+                /** @var IndividualMember $member */
+                $member = $memberRepo->findOneByOrganisationSlugUsernameEmail(trim($orgSlug), trim($username));
+                $userManager = $this->get('magenta_user.user_manager');
+                if (empty($member)) {
+                    throw new UnauthorizedHttpException('Member not found');
+                }
+                if (!empty($password) && $userManager->isPasswordValid($member->getPerson()->getUser(), $password)) {
+                    return new RedirectResponse($this->get('router')->generate('magenta_book_index',
+                        [
+                            'orgSlug' => $orgSlug,
+                            'accessCode' => $member->getPin(),
+                            'employeeCode' => $member->getCode(),
+                        ]));
                 } else {
-                    $repo = $this->getDoctrine()->getRepository(IndividualMember::class);
-                    /** @var IndividualMember $member */
-                    $member = $repo->findOneByOrganisationCodeNric(trim($orgCode), trim($idNumber));
-                    if (!empty($member) && $member->getPerson()->getBirthDate()->format('Y-m-d') === $dob->format('Y-m-d')) {
-                        return new RedirectResponse($this->get('router')->generate('magenta_book_index',
-                            [
-                                'orgSlug' => $orgSlug,
-                                'accessCode' => $member->getPin(),
-                                'employeeCode' => $member->getCode()
-                            ]));
+                    $this->addFlash('error', 'Invalid Credentials');
+                }
+            } else {
+                if ((empty($dobStr) || empty($idNumber) || empty($orgCode))) {
+//                throw new UnauthorizedHttpException('Fields are required');
+                    $this->addFlash('error', 'Missing required Fields');
+                } else {
+                    $dob = \DateTime::createFromFormat('Y-m-d', $dobStr);
+                    if (empty($dob)) {
+                        $this->addFlash('error', 'Date of Birth is invalid');
                     } else {
-                        $this->addFlash('error', 'Invalid Credentials');
+                        /** @var IndividualMember $member */
+                        $member = $memberRepo->findOneByOrganisationCodeNric(trim($orgCode), trim($idNumber));
+                        
+                        if (!empty($member) && $member->getPerson()->getBirthDate()->format('Y-m-d') === $dob->format('Y-m-d')) {
+                            return new RedirectResponse($this->get('router')->generate('magenta_book_index',
+                                [
+                                    'orgSlug' => $orgSlug,
+                                    'accessCode' => $member->getPin(),
+                                    'employeeCode' => $member->getCode(),
+                                ]));
+                        } else {
+                            $this->addFlash('error', 'Invalid Credentials');
+                        }
                     }
                 }
             }
         }
-        return $this->render('@MagentaCBookAdmin/App/login.html.twig', []);
+        
+        $orgRepo = $this->getDoctrine()->getRepository(Organisation::class);
+        /** @var Organisation $org */
+        $org = $orgRepo->findOneBy(['slug' => $orgSlug,
+        ]);
+        if (empty($org)) {
+            throw new NotFoundHttpException();
+        }
+        if ($org->isAuthByUsernamePassword()) {
+            $template = 'login-username.html.twig';
+        } else {
+            $template = 'login-nric.html.twig';
+        }
+        
+        return $this->render('@MagentaCBookAdmin/App/' . $template, []);
     }
     
     public function indexAction($orgSlug, $accessCode, $employeeCode, Request $request)
@@ -65,7 +101,7 @@ class BookReaderController extends Controller
         } catch (UnauthorizedHttpException $e) {
             return new RedirectResponse($this->get('router')->generate('magenta_book_login',
                 [
-                    'orgSlug' => $orgSlug
+                    'orgSlug' => $orgSlug,
                 ]));
         }
         
@@ -100,7 +136,7 @@ class BookReaderController extends Controller
 //            'books' => $books,
             'orgSlug' => $orgSlug,
             'accessCode' => $accessCode,
-            'employeeCode' => $employeeCode
+            'employeeCode' => $employeeCode,
         ]);
     }
     
@@ -113,12 +149,13 @@ class BookReaderController extends Controller
         
         if (empty($book)) {
             $this->addFlash('error', 'The Book you requested for could not be found!');
+            
             return new RedirectResponse($this->get('router')->generate('magenta_book_index',
                 [
                     'member' => $member,
                     'orgSlug' => $orgSlug,
                     'employeeCode' => $employeeCode,
-                    'accessCode' => $accessCode
+                    'accessCode' => $accessCode,
                 ]));
         }
         
@@ -131,7 +168,7 @@ class BookReaderController extends Controller
             'subContentItems' => $book->getRootChapters(),
             'orgSlug' => $orgSlug,
             'accessCode' => $accessCode,
-            'employeeCode' => $employeeCode
+            'employeeCode' => $employeeCode,
         ]);
     }
     
@@ -148,6 +185,7 @@ class BookReaderController extends Controller
         }
         /** @var Book $book */
         $book = $chapter->getBook();
+        
         return $this->render('@MagentaCBookAdmin/App/Book/read-chapter.html.twig', [
             'member' => $member,
             'base_book_template' => '@MagentaCBookAdmin/App/base.html.twig',
@@ -156,7 +194,7 @@ class BookReaderController extends Controller
             'subContentItems' => $chapter->getSubChapters(),
             'orgSlug' => $orgSlug,
             'accessCode' => $accessCode,
-            'employeeCode' => $employeeCode
+            'employeeCode' => $employeeCode,
         ]);
     }
     
@@ -186,7 +224,7 @@ class BookReaderController extends Controller
             'members' => $sortedMembers,
             'orgSlug' => $orgSlug,
             'accessCode' => $accessCode,
-            'employeeCode' => $employeeCode
+            'employeeCode' => $employeeCode,
         ]);
     }
     
@@ -209,6 +247,7 @@ class BookReaderController extends Controller
         $manager->flush();
         
         $org = $member->getOrganization();
+        
         return $this->render('@MagentaCBookAdmin/App/Messaging/read-message.html.twig', [
             'message' => $message,
             'member' => $member,
@@ -216,7 +255,7 @@ class BookReaderController extends Controller
             'logo' => $org->getLogo(),
             'orgSlug' => $orgSlug,
             'accessCode' => $accessCode,
-            'employeeCode' => $employeeCode
+            'employeeCode' => $employeeCode,
         ]);
     }
     
@@ -230,6 +269,7 @@ class BookReaderController extends Controller
         if (empty($this->member)) {
             $this->member = $this->get('magenta_book.individual_service')->getMemberByPinCodeEmployeeCode($accessCode, $employeeCode);
         }
+        
         return $this->member;
     }
 }

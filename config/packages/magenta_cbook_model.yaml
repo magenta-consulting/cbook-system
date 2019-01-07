@@ -410,7 +410,6 @@ sonata_media:
 
     db_driver: doctrine_orm # could be doctrine_orm, doctrine_mongodb or doctrine_phpcr
 
-
 monolog:
     handlers:
         critical_error_logging:
