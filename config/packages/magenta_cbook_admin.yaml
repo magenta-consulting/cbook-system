@@ -143,7 +143,7 @@ sonata_admin:
                 #                    - Magenta\Bundle\CBookAdminBundle\Admin\System\AccessControl\ACRoleAdmin
                 - Magenta\Bundle\CBookAdminBundle\Admin\Messaging\MessageAdmin
                 - sonata.notification.admin.message
-                - sonata.media.admin.media
+    #                    - sonata.media.admin.media
     #                    - Sonata\MediaBundle\Admin\ORM\MediaAdmin
     #                    - sonata.user.admin.group
     #                    - sonata.classification.admin.context
