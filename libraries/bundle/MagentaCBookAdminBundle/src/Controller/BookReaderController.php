@@ -7,6 +7,7 @@ use Magenta\Bundle\CBookModelBundle\Entity\Book\Chapter;
 use Magenta\Bundle\CBookModelBundle\Entity\Classification\Category;
 use Magenta\Bundle\CBookModelBundle\Entity\Classification\Context;
 use Magenta\Bundle\CBookModelBundle\Entity\Messaging\Message;
+use Magenta\Bundle\CBookModelBundle\Entity\Messaging\MessageDelivery;
 use Magenta\Bundle\CBookModelBundle\Entity\Organisation\IndividualMember;
 use Magenta\Bundle\CBookModelBundle\Entity\Organisation\Organisation;
 use Magenta\Bundle\CBookModelBundle\Entity\System\ProgressiveWebApp\Subscription;
@@ -38,8 +39,8 @@ class BookReaderController extends Controller
                 /** @var IndividualMember $member */
                 $member = $memberRepo->findOneByOrganisationSlugUsernameEmail(trim($orgSlug), trim($username));
                 $userManager = $this->get('magenta_user.user_manager');
-                if (empty($member)) {
-                    throw new UnauthorizedHttpException('Member not found');
+                if (empty($member) || !$member->isEnabled()) {
+                    throw new UnauthorizedHttpException('Member not found or not enabled');
                 }
                 if (!empty($password) && $userManager->isPasswordValid($member->getPerson()->getUser(), $password)) {
                     return new RedirectResponse($this->get('router')->generate('magenta_book_index',
@@ -63,7 +64,7 @@ class BookReaderController extends Controller
                         /** @var IndividualMember $member */
                         $member = $memberRepo->findOneByOrganisationCodeNric(trim($orgCode), trim($idNumber));
                         
-                        if (!empty($member) && $member->getPerson()->getBirthDate()->format('Y-m-d') === $dob->format('Y-m-d')) {
+                        if (!empty($member) && $member->getPerson()->getBirthDate()->format('Y-m-d') === $dob->format('Y-m-d') && $member->isEnabled()) {
                             return new RedirectResponse($this->get('router')->generate('magenta_book_index',
                                 [
                                     'orgSlug' => $orgSlug,
@@ -128,6 +129,51 @@ class BookReaderController extends Controller
         }
         
         return $this->render('@MagentaCBookAdmin/App/index.html.twig', [
+            'rootCategory' => $rootCategory,
+            'selectedCategory' => $selectedCategory,
+            'member' => $member,
+            'logo' => $member->getOrganization()->getLogo(),
+            'base_book_template' => '@MagentaCBookAdmin/App/base.html.twig',
+//            'books' => $books,
+            'orgSlug' => $orgSlug,
+            'accessCode' => $accessCode,
+            'employeeCode' => $employeeCode,
+        ]);
+    }
+ 
+    public function messagesAction($orgSlug, $accessCode, $employeeCode, Request $request){
+        try {
+            $this->checkAccess($accessCode, $employeeCode, $orgSlug);
+        } catch (UnauthorizedHttpException $e) {
+            return new RedirectResponse($this->get('router')->generate('magenta_book_login',
+                [
+                    'orgSlug' => $orgSlug,
+                ]));
+        }
+    
+        $registry = $this->getDoctrine();
+    
+        $member = $this->getMemberByPinCodeEmployeeCode($accessCode, $employeeCode);
+//        $books = $member->getBooksToRead();
+    
+        /** @var Organisation $org */
+        $org = $member->getOrganization();
+    
+        $rootCategory = $org->getRootCategoriesByContext($registry->getRepository(Context::class)->find('default'))->first();
+    
+        $registry = $this->getDoctrine();
+        $parentId = $request->query->get('parent');
+        $selectedCategory = null;
+        if (!empty($parentId)) {
+            $catRepo = $registry->getRepository(Category::class);
+            $selectedCategory = $catRepo->find($parentId);
+        }
+    
+        if (empty($selectedCategory)) {
+            $selectedCategory = $rootCategory;
+        }
+    
+        return $this->render('@MagentaCBookAdmin/App/Messaging/messages.html.twig', [
             'rootCategory' => $rootCategory,
             'selectedCategory' => $selectedCategory,
             'member' => $member,
@@ -222,6 +268,36 @@ class BookReaderController extends Controller
             'base_book_template' => '@MagentaCBookAdmin/App/base.html.twig',
             'logo' => $org->getLogo(),
             'members' => $sortedMembers,
+            'orgSlug' => $orgSlug,
+            'accessCode' => $accessCode,
+            'employeeCode' => $employeeCode,
+        ]);
+    }
+    
+    public function readMessageAction($orgSlug, $accessCode, $employeeCode, $messageDeliveryId, Request $request)
+    {
+        $this->get('magenta_book.individual_service')->checkAccess($accessCode, $employeeCode, $orgSlug);
+        $member = $this->get('magenta_book.individual_service')->getMemberByPinCodeEmployeeCode($accessCode, $employeeCode);
+        $registry = $this->getDoctrine();
+        /** @var MessageDelivery $delivery */
+        $delivery = $registry->getRepository(MessageDelivery::class)->find($messageDeliveryId);
+        if (empty($delivery)) {
+            throw new NotFoundHttpException('delivery not found');
+        }
+        
+        $delivery->setDateRead(new \DateTime());
+        
+        $manager = $this->get('doctrine.orm.default_entity_manager');
+        $manager->persist($delivery);
+        $manager->flush();
+        
+        $org = $member->getOrganization();
+        
+        return $this->render('@MagentaCBookAdmin/App/Messaging/read-message.html.twig', [
+            'message' => $delivery->getMessage(),
+            'member' => $member,
+            'base_book_template' => '@MagentaCBookAdmin/App/base.html.twig',
+            'logo' => $org->getLogo(),
             'orgSlug' => $orgSlug,
             'accessCode' => $accessCode,
             'employeeCode' => $employeeCode,
