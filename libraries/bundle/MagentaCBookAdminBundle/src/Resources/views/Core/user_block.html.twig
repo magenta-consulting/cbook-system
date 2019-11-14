@@ -1,7 +1,7 @@
 {% block user_block %}
     {% if app.user %}
         {% set _bg_class          = "bg-light-red" %}
-        {% set _logout_uri        = url('magenta_user_security_logout') %}
+        {% set _logout_uri        = url('magenta_user_security_logout',[],true) %}
         {% set _logout_text       = 'layout.logout'|trans({}, 'MagentaCBookAdminBundle') %}
         {#{% set _profile_uri       = sonata_user.userAdmin.isGranted('EDIT', app.user) ? sonata_user.userAdmin.generateUrl('edit', {id: app.user.id}) : sonata_user.userAdmin.generateUrl('show', {id: app.user.id}) %}#}
         {% set _profile_text      = 'profile_edit'|trans({}, 'MagentaCBookAdminBundle') %}
